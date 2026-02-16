@@ -43,120 +43,120 @@ export function CommandPalette() {
       // Actions
       {
         id: 'new-task',
-        label: 'New Task',
+        label: 'Nova Tarefa',
         shortcut: 'C',
         icon: <Plus className="h-4 w-4" />,
-        category: 'Actions',
+        category: 'Ações',
         action: () => openCreateDialog(),
-        keywords: ['create', 'add', 'task'],
+        keywords: ['criar', 'adicionar', 'tarefa', 'create', 'add', 'task'],
       },
       {
         id: 'toggle-theme',
-        label: theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+        label: theme === 'dark' ? 'Modo Claro' : 'Modo Escuro',
         icon: theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />,
-        category: 'Actions',
+        category: 'Ações',
         action: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
-        keywords: ['theme', 'dark', 'light', 'mode', 'appearance'],
+        keywords: ['tema', 'escuro', 'claro', 'modo', 'theme', 'dark', 'light'],
       },
 
       // Navigation
       {
         id: 'go-board',
-        label: 'Go to Board',
+        label: 'Ir para o Quadro',
         shortcut: 'B',
         icon: <LayoutDashboard className="h-4 w-4" />,
-        category: 'Navigation',
+        category: 'Navegação',
         action: () => setView('board'),
-        keywords: ['kanban', 'home', 'main'],
+        keywords: ['kanban', 'início', 'principal', 'board', 'home'],
       },
       {
         id: 'go-activity',
-        label: 'Go to Activity',
+        label: 'Ir para Atividades',
         icon: <ListOrdered className="h-4 w-4" />,
-        category: 'Navigation',
+        category: 'Navegação',
         action: () => setView('activity'),
-        keywords: ['feed', 'log', 'history'],
+        keywords: ['feed', 'histórico', 'activity'],
       },
       {
         id: 'go-backlog',
-        label: 'Go to Backlog',
+        label: 'Ir para Backlog',
         icon: <Inbox className="h-4 w-4" />,
-        category: 'Navigation',
+        category: 'Navegação',
         action: () => setView('backlog'),
-        keywords: ['someday', 'maybe', 'later'],
+        keywords: ['futuro', 'talvez', 'depois', 'someday', 'later'],
       },
       {
         id: 'go-archive',
-        label: 'Go to Archive',
+        label: 'Ir para Arquivo',
         icon: <Archive className="h-4 w-4" />,
-        category: 'Navigation',
+        category: 'Navegação',
         action: () => setView('archive'),
-        keywords: ['done', 'completed', 'old'],
+        keywords: ['concluído', 'finalizado', 'antigo', 'done', 'completed', 'old'],
       },
 
       // Board shortcuts
       {
         id: 'move-todo',
-        label: 'Move Task → To Do',
+        label: 'Mover Tarefa → A Fazer',
         shortcut: '1',
         icon: <ArrowRight className="h-4 w-4" />,
-        category: 'Board',
+        category: 'Quadro',
         action: () => {},
-        keywords: ['status', 'move'],
+        keywords: ['status', 'mover', 'todo'],
       },
       {
         id: 'move-inprogress',
-        label: 'Move Task → In Progress',
+        label: 'Mover Tarefa → Em Progresso',
         shortcut: '2',
         icon: <ArrowRight className="h-4 w-4" />,
-        category: 'Board',
+        category: 'Quadro',
         action: () => {},
-        keywords: ['status', 'move'],
+        keywords: ['status', 'mover', 'progresso'],
       },
       {
         id: 'move-blocked',
-        label: 'Move Task → Blocked',
+        label: 'Mover Tarefa → Bloqueado',
         shortcut: '3',
         icon: <ArrowRight className="h-4 w-4" />,
-        category: 'Board',
+        category: 'Quadro',
         action: () => {},
-        keywords: ['status', 'move'],
+        keywords: ['status', 'mover', 'bloqueado'],
       },
       {
         id: 'move-done',
-        label: 'Move Task → Done',
+        label: 'Mover Tarefa → Concluído',
         shortcut: '4',
         icon: <ArrowRight className="h-4 w-4" />,
-        category: 'Board',
+        category: 'Quadro',
         action: () => {},
-        keywords: ['status', 'move', 'complete'],
+        keywords: ['status', 'mover', 'completo', 'done'],
       },
       {
         id: 'nav-up',
-        label: 'Select Previous Task',
+        label: 'Selecionar Tarefa Anterior',
         shortcut: 'K / ↑',
         icon: <Keyboard className="h-4 w-4" />,
-        category: 'Board',
+        category: 'Quadro',
         action: () => {},
-        keywords: ['navigate', 'up'],
+        keywords: ['navegar', 'cima', 'anterior'],
       },
       {
         id: 'nav-down',
-        label: 'Select Next Task',
+        label: 'Selecionar Próxima Tarefa',
         shortcut: 'J / ↓',
         icon: <Keyboard className="h-4 w-4" />,
-        category: 'Board',
+        category: 'Quadro',
         action: () => {},
-        keywords: ['navigate', 'down'],
+        keywords: ['navegar', 'baixo', 'próximo'],
       },
       {
         id: 'open-task',
-        label: 'Open Selected Task',
+        label: 'Abrir Tarefa Selecionada',
         shortcut: 'Enter',
         icon: <Keyboard className="h-4 w-4" />,
-        category: 'Board',
+        category: 'Quadro',
         action: () => {},
-        keywords: ['view', 'detail'],
+        keywords: ['ver', 'detalhe', 'abrir'],
       },
     ],
     [openCreateDialog, setView, theme, setTheme]
@@ -259,8 +259,8 @@ export function CommandPalette() {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Type a command or search..."
-            aria-label="Search commands"
+            placeholder="Digite um comando ou pesquise..."
+            aria-label="Pesquisar comandos"
             className="flex-1 h-12 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
           <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
@@ -271,7 +271,9 @@ export function CommandPalette() {
         {/* Results */}
         <div ref={listRef} className="max-h-[320px] overflow-y-auto p-2">
           {filtered.length === 0 ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">No commands found</div>
+            <div className="py-6 text-center text-sm text-muted-foreground">
+              Nenhum comando encontrado
+            </div>
           ) : (
             grouped.map((group) => (
               <div key={group.category}>

@@ -119,19 +119,19 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-  { id: 'general', label: 'General', icon: Settings2 },
-  { id: 'board', label: 'Board', icon: Layout },
-  { id: 'tasks', label: 'Tasks', icon: ListTodo },
-  { id: 'agents', label: 'Agents', icon: Cpu },
-  { id: 'data', label: 'Data', icon: Database },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'security', label: 'Security', icon: Shield },
-  { id: 'delegation', label: 'Delegation', icon: Plane },
-  { id: 'tool-policies', label: 'Tool Policies', icon: Lock },
-  { id: 'enforcement', label: 'Enforcement', icon: CheckCircle2 },
-  { id: 'shared-resources', label: 'Shared Resources', icon: Boxes },
-  { id: 'doc-freshness', label: 'Doc Freshness', icon: BookOpen },
-  { id: 'manage', label: 'Manage', icon: Archive },
+  { id: 'general', label: 'Geral', icon: Settings2 },
+  { id: 'board', label: 'Quadro', icon: Layout },
+  { id: 'tasks', label: 'Tarefas', icon: ListTodo },
+  { id: 'agents', label: 'Agentes', icon: Cpu },
+  { id: 'data', label: 'Dados', icon: Database },
+  { id: 'notifications', label: 'Notificações', icon: Bell },
+  { id: 'security', label: 'Segurança', icon: Shield },
+  { id: 'delegation', label: 'Delegação', icon: Plane },
+  { id: 'tool-policies', label: 'Políticas de Ferramentas', icon: Lock },
+  { id: 'enforcement', label: 'Aplicação', icon: CheckCircle2 },
+  { id: 'shared-resources', label: 'Recursos Compartilhados', icon: Boxes },
+  { id: 'doc-freshness', label: 'Atualização de Documentos', icon: BookOpen },
+  { id: 'manage', label: 'Gerenciar', icon: Archive },
 ];
 
 // ============ Settings Dialog Props ============
@@ -197,7 +197,7 @@ export function SettingsDialog({ open, onOpenChange, defaultTab }: SettingsDialo
       if (!imported || typeof imported !== 'object') {
         toast({
           title: 'Import failed',
-          description: 'Invalid settings file: must be a JSON object',
+          description: 'Arquivo de configurações inválido: deve ser um objeto JSON',
           duration: Infinity,
         });
         return;
@@ -219,8 +219,8 @@ export function SettingsDialog({ open, onOpenChange, defaultTab }: SettingsDialo
       const unknownKeys = importedKeys.filter((k) => !validSections.includes(k));
       if (unknownKeys.length > 0) {
         toast({
-          title: 'Warning',
-          description: `Unknown sections will be ignored: ${unknownKeys.join(', ')}`,
+          title: 'Aviso',
+          description: `Seções desconhecidas serão ignoradas: ${unknownKeys.join(', ')}`,
           duration: Infinity,
         });
       }
@@ -232,29 +232,29 @@ export function SettingsDialog({ open, onOpenChange, defaultTab }: SettingsDialo
       }
       if (Object.keys(validPatch).length === 0) {
         toast({
-          title: 'Import failed',
-          description: 'No valid settings found in file',
+          title: 'Falha na importação',
+          description: 'Nenhuma configuração válida encontrada no arquivo',
           duration: Infinity,
         });
         return;
       }
       if (
         confirm(
-          `Import ${Object.keys(validPatch).length} setting sections: ${Object.keys(validPatch).join(', ')}?\n\nThis will overwrite current values.`
+          `Importar ${Object.keys(validPatch).length} seções de configuração: ${Object.keys(validPatch).join(', ')}?\n\nIsso substituirá os valores atuais.`
         )
       ) {
         debouncedUpdate(validPatch);
         toast({
-          title: 'Import complete',
-          description: 'Settings imported successfully!',
+          title: 'Importação concluída',
+          description: 'Configurações importadas com sucesso!',
           duration: 3000,
         });
       }
     } catch (err) {
-      console.error('[Settings] Import failed:', err);
+      console.error('[Settings] Falha na importação:', err);
       toast({
-        title: 'Import failed',
-        description: err instanceof Error ? err.message : 'Invalid JSON',
+        title: 'Falha na importação',
+        description: err instanceof Error ? err.message : 'JSON inválido',
         duration: Infinity,
       });
     } finally {

@@ -10,10 +10,13 @@ import {
   FileText,
   Users,
   Workflow,
+  Bot,
+  Menu,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CreateTaskDialog } from '@/components/task/CreateTaskDialog';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
+import { AgentControlDialog } from '@/components/agents/AgentControlDialog';
 // ActivitySidebar removed — merged into ActivityFeed (GH-66)
 // ArchiveSidebar removed — replaced with full-page ArchivePage
 import { ChatPanel } from '@/components/chat/ChatPanel';
@@ -26,11 +29,14 @@ import { useView } from '@/contexts/ViewContext';
 import { useBacklogCount } from '@/hooks/useBacklog';
 import { useTheme } from '@/hooks/useTheme';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export function Header() {
   const [createOpen, setCreateOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState<string | undefined>();
+  const [agentControlOpen, setAgentControlOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // activityOpen removed — sidebar merged into feed (GH-66)
   // archiveOpen removed — archive is now a full page view
   const [chatOpen, setChatOpen] = useState(false);
@@ -69,17 +75,22 @@ export function Header() {
             <WebSocketIndicator />
           </div>
 
-          <div className="flex items-center gap-2" role="toolbar" aria-label="Board actions">
+          {/* Desktop toolbar */}
+          <div
+            className="hidden md:flex items-center gap-2"
+            role="toolbar"
+            aria-label="Board actions"
+          >
             <Button variant="default" size="sm" onClick={() => setCreateOpen(true)}>
               <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
-              New Task
+              Nova Tarefa
             </Button>
             <Button
               variant={view === 'activity' ? 'secondary' : 'ghost'}
               size="icon"
               onClick={() => setView(view === 'activity' ? 'board' : 'activity')}
-              aria-label="Activity"
-              title="Activity"
+              aria-label="Atividades"
+              title="Atividades"
             >
               <ListOrdered className="h-4 w-4" aria-hidden="true" />
             </Button>
@@ -105,8 +116,8 @@ export function Header() {
               variant={view === 'archive' ? 'secondary' : 'ghost'}
               size="icon"
               onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
-              aria-label="Archive"
-              title="Archive"
+              aria-label="Arquivo"
+              title="Arquivo"
             >
               <Archive className="h-4 w-4" aria-hidden="true" />
             </Button>
@@ -114,8 +125,8 @@ export function Header() {
               variant={view === 'templates' ? 'secondary' : 'ghost'}
               size="icon"
               onClick={() => setView(view === 'templates' ? 'board' : 'templates')}
-              aria-label="Templates"
-              title="Templates"
+              aria-label="Modelos"
+              title="Modelos"
             >
               <FileText className="h-4 w-4" aria-hidden="true" />
             </Button>
@@ -132,17 +143,37 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={() => setSquadChatOpen(true)}
-              aria-label="Squad Chat"
-              title="Squad Chat — Agent communication"
+              aria-label="Chat da Equipe"
+              title="Chat da Equipe — Comunicação dos agentes"
             >
               <Users className="h-4 w-4" aria-hidden="true" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
+              onClick={() => setAgentControlOpen(true)}
+              aria-label="Controle de Agentes"
+              title="Controle de Agentes"
+            >
+              <Bot className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            {/* Botão de menu mobile */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Menu"
+              title="Menu"
+              className="mobile-menu-btn"
+            >
+              <Menu className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setSettingsOpen(true)}
-              aria-label="Settings"
-              title="Settings"
+              aria-label="Configurações"
+              title="Configurações"
             >
               <Settings className="h-4 w-4" aria-hidden="true" />
             </Button>
@@ -150,8 +181,8 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              aria-label="Toggle theme"
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label="Alternar tema"
+              title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
             >
               {theme === 'light' ? (
                 <Moon className="h-4 w-4" aria-hidden="true" />
@@ -176,8 +207,112 @@ export function Header() {
               </kbd>
             </Button>
           </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center gap-2">
+            <Button variant="default" size="sm" onClick={() => setCreateOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
+              Nova
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Menu"
+            >
+              <Menu className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
         </div>
       </nav>
+
+      {/* Mobile menu modal */}
+      <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Menu</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 mt-4">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setView(view === 'activity' ? 'board' : 'activity');
+              }}
+              className="justify-start"
+            >
+              <ListOrdered className="h-4 w-4 mr-2" />
+              Atividades
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setView(view === 'backlog' ? 'board' : 'backlog');
+              }}
+              className="justify-start"
+            >
+              <Inbox className="h-4 w-4 mr-2" />
+              Backlog
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setView(view === 'archive' ? 'board' : 'archive');
+              }}
+              className="justify-start"
+            >
+              <Archive className="h-4 w-4 mr-2" />
+              Arquivo
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setView(view === 'templates' ? 'board' : 'templates');
+              }}
+              className="justify-start"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Modelos
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setView(view === 'workflows' ? 'board' : 'workflows');
+              }}
+              className="justify-start"
+            >
+              <Workflow className="h-4 w-4 mr-2" />
+              Workflows
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setAgentControlOpen(true);
+              }}
+              className="justify-start"
+            >
+              <Bot className="h-4 w-4 mr-2" />
+              Agentes
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setSettingsOpen(true);
+              }}
+              className="justify-start"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Configurações
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <CreateTaskDialog open={createOpen} onOpenChange={setCreateOpen} />
       <SettingsDialog
@@ -190,6 +325,7 @@ export function Header() {
       />
       <ChatPanel open={chatOpen} onOpenChange={setChatOpen} />
       <SquadChatPanel open={squadChatOpen} onOpenChange={setSquadChatOpen} />
+      <AgentControlDialog open={agentControlOpen} onOpenChange={setAgentControlOpen} />
     </header>
   );
 }

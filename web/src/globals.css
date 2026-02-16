@@ -105,3 +105,180 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
 }
+
+/* ============================================
+   MOBILE RESPONSIVE IMPROVEMENTS
+   ============================================ */
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+  button, 
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Larger touch targets for icons */
+  button[class*="size-icon"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Header adjustments */
+  header nav {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  header h1 {
+    font-size: 1rem;
+  }
+
+  /* Hide text labels on mobile, show only icons */
+  .mobile-hide-text span:not(.sr-only) {
+    display: none;
+  }
+
+  /* Reduce button padding on mobile */
+  button {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  /* Kanban columns - horizontal scroll on mobile */
+  .kanban-columns-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px;
+    padding-bottom: 8px;
+  }
+
+  .kanban-columns-container > * {
+    flex: 0 0 85vw;
+    max-width: 320px;
+    scroll-snap-align: start;
+  }
+
+  /* Sidebar - hide on mobile by default */
+  .board-sidebar {
+    display: none;
+  }
+
+  .board-sidebar.mobile-visible {
+    display: block;
+    position: fixed;
+    top: 56px;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 40;
+    background: hsl(var(--card));
+    border-left: 1px solid hsl(var(--border));
+    overflow-y: auto;
+    animation: slideIn 0.2s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Task detail panel - full screen on mobile */
+  [role="dialog"][data-state="open"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Filter bar - stack vertically on mobile */
+  .filter-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-bar > * {
+    width: 100%;
+  }
+
+  /* Floating chat - smaller on mobile */
+  .floating-chat {
+    width: calc(100vw - 16px);
+    height: calc(100vh - 80px);
+    right: 8px;
+    bottom: 8px;
+  }
+
+  /* Modal dialogs - full screen on mobile */
+  [data-radix-popper-content-wrapper] {
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  /* Toast notifications - full width on mobile */
+  [data-sonner-toaster] {
+    width: calc(100vw - 32px) !important;
+    left: 16px !important;
+    right: 16px !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .kanban-columns-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .board-sidebar {
+    width: 200px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .kanban-columns-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+
+  header {
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
+}
+
+/* Mobile menu button */
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+}

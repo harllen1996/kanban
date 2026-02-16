@@ -47,37 +47,37 @@ const STATE_CONFIG: Record<AgentState, StateConfig> = {
   idle: {
     color: '#6b7280',
     bgColor: 'rgba(107, 114, 128, 0.15)',
-    label: 'Idle',
+    label: 'Inativo',
     icon: PauseCircle,
-    description: 'No agent active',
+    description: 'Nenhum agente ativo',
   },
   working: {
     color: '#22c55e',
     bgColor: 'rgba(34, 197, 94, 0.15)',
-    label: 'Working',
+    label: 'Trabalhando',
     icon: PlayCircle,
-    description: 'Agent executing task',
+    description: 'Agente executando tarefa',
   },
   thinking: {
     color: '#f59e0b',
     bgColor: 'rgba(245, 158, 11, 0.15)',
-    label: 'Thinking',
+    label: 'Pensando',
     icon: Brain,
-    description: 'Planning next action',
+    description: 'Planejando próxima ação',
   },
   subagents: {
     color: '#8b5cf6',
     bgColor: 'rgba(139, 92, 246, 0.15)',
-    label: 'Sub-Agents',
+    label: 'Sub-Agentes',
     icon: Cpu,
-    description: 'Parallel execution',
+    description: 'Execução paralela',
   },
   error: {
     color: '#ef4444',
     bgColor: 'rgba(239, 68, 68, 0.15)',
-    label: 'Error',
+    label: 'Erro',
     icon: AlertCircle,
-    description: 'Something went wrong',
+    description: 'Algo deu errado',
   },
 };
 
@@ -96,10 +96,10 @@ function formatTimeAgo(timestamp: string): string {
   const date = new Date(timestamp);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  if (seconds < 60) return 'just now';
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  return `${Math.floor(seconds / 86400)}d ago`;
+  if (seconds < 60) return 'agora';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m atrás`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h atrás`;
+  return `${Math.floor(seconds / 86400)}d atrás`;
 }
 
 // ─── Task Counter ────────────────────────────────────────────────────
@@ -207,7 +207,7 @@ function AgentStatusPanel({ onTaskClick }: { onTaskClick?: (taskId: string) => v
       {state !== 'idle' && (
         <div className="space-y-1.5">
           <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-            {(data.activeAgents?.length || 0) > 1 ? 'Active Agents' : 'Current Task'}
+            {(data.activeAgents?.length || 0) > 1 ? 'Agentes Ativos' : 'Tarefa Atual'}
           </div>
           {data.activeAgents && data.activeAgents.length > 0 ? (
             <div className="space-y-1.5 max-h-[160px] overflow-y-auto">
@@ -274,14 +274,14 @@ function AgentStatusPanel({ onTaskClick }: { onTaskClick?: (taskId: string) => v
       {!data.isConnected && (
         <div className="text-[10px] text-amber-500/70 flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50" />
-          Polling (WebSocket disconnected)
+          Sondando (WebSocket desconectado)
         </div>
       )}
 
       {/* Last updated */}
       <div className="text-[10px] text-muted-foreground/40 pt-1 border-t border-border/50">
-        Updated {data.lastUpdated ? formatTimeAgo(data.lastUpdated) : 'never'}
-        {data.isStale && data.status !== 'idle' && ' (stale)'}
+        Atualizado {data.lastUpdated ? formatTimeAgo(data.lastUpdated) : 'nunca'}
+        {data.isStale && data.status !== 'idle' && ' (desatualizado)'}
       </div>
     </div>
   );
@@ -315,7 +315,7 @@ function RecentStatusChanges({
         onClick={onOpenActivityLog}
         className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground mb-2 uppercase tracking-wider hover:text-foreground transition-colors group w-full text-left"
       >
-        Recent Status Changes
+        Mudanças Recentes de Status
         <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>
       <div className="space-y-1 max-h-[200px] overflow-y-auto">
@@ -344,16 +344,16 @@ function RecentStatusChanges({
                 <span className="font-medium">
                   {(() => {
                     const t = activity.type as string;
-                    if (t === 'agent_started') return 'Agent Started';
-                    if (t === 'agent_stopped') return 'Agent Stopped';
-                    if (t === 'agent_completed') return 'Agent Completed';
+                    if (t === 'agent_started') return 'Agente Iniciado';
+                    if (t === 'agent_stopped') return 'Agente Parado';
+                    if (t === 'agent_completed') return 'Agente Concluído';
                     if (t === 'status_changed')
                       return `→ ${String(activity.details?.status ?? '')}`;
-                    if (t === 'task_created') return 'Created';
-                    if (t === 'task_demoted') return 'Demoted';
-                    if (t === 'task_promoted') return 'Promoted';
-                    if (t === 'task_archived') return 'Archived';
-                    if (t === 'task_updated') return 'Updated';
+                    if (t === 'task_created') return 'Criada';
+                    if (t === 'task_demoted') return 'Rebaixada';
+                    if (t === 'task_promoted') return 'Promovida';
+                    if (t === 'task_archived') return 'Arquivada';
+                    if (t === 'task_updated') return 'Atualizada';
                     return t;
                   })()}
                 </span>
@@ -367,7 +367,7 @@ function RecentStatusChanges({
             </button>
           ))
         ) : (
-          <div className="text-[11px] text-muted-foreground/40 py-2">No recent changes</div>
+          <div className="text-[11px] text-muted-foreground/40 py-2">Nenhuma mudança recente</div>
         )}
       </div>
     </div>
@@ -389,7 +389,7 @@ export function BoardSidebar({ onTaskClick }: BoardSidebarProps) {
       {/* Task Counters */}
       <div className="rounded-lg border bg-card p-3 min-h-[220px]">
         <h3 className="text-[10px] font-medium text-muted-foreground mb-2 uppercase tracking-wider">
-          Tasks
+          Tarefas
         </h3>
         <div className="grid grid-cols-2 gap-2">
           <Counter
@@ -398,30 +398,30 @@ export function BoardSidebar({ onTaskClick }: BoardSidebarProps) {
             icon={<Inbox className="h-3.5 w-3.5" />}
           />
           <Counter
-            label="To Do"
+            label="A Fazer"
             value={counts?.todo || 0}
             icon={<ListTodo className="h-3.5 w-3.5" />}
           />
           <Counter
-            label="In Progress"
+            label="Em Progresso"
             value={counts?.['in-progress'] || 0}
             icon={<Play className="h-3.5 w-3.5" />}
             color="text-blue-500"
           />
           <Counter
-            label="Blocked"
+            label="Bloqueado"
             value={counts?.blocked || 0}
             icon={<Ban className="h-3.5 w-3.5" />}
             color="text-red-500"
           />
           <Counter
-            label="Done"
+            label="Concluído"
             value={counts?.done || 0}
             icon={<CheckCircle className="h-3.5 w-3.5" />}
             color="text-green-500"
           />
           <Counter
-            label="Archived"
+            label="Arquivado"
             value={counts?.archived || 0}
             icon={<Archive className="h-3.5 w-3.5" />}
           />
@@ -436,7 +436,7 @@ export function BoardSidebar({ onTaskClick }: BoardSidebarProps) {
       {/* Multi-Agent Registry — all registered agents */}
       <div className="rounded-lg border bg-card p-3">
         <h3 className="text-[10px] font-medium text-muted-foreground mb-2 uppercase tracking-wider">
-          Agent Registry
+          Registro de Agentes
         </h3>
         <MultiAgentPanel onTaskClick={onTaskClick} />
       </div>

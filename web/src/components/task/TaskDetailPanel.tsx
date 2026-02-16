@@ -94,15 +94,15 @@ export function TaskDetailPanel({
         <SheetHeader className="space-y-1 flex-shrink-0">
           <div className="flex items-center gap-2 text-muted-foreground">
             {TypeIconComponent && <TypeIconComponent className="h-4 w-4" />}
-            <span className="text-xs uppercase tracking-wide">{typeLabel} Task</span>
+            <span className="text-xs uppercase tracking-wide">{typeLabel}</span>
             {readOnly && (
               <Badge variant="secondary" className="flex items-center gap-1 ml-auto">
                 <Archive className="h-3 w-3" />
-                Archived
+                Arquivada
               </Badge>
             )}
             {!readOnly && isDirty && (
-              <span className="text-xs text-amber-500 ml-auto">Saving...</span>
+              <span className="text-xs text-amber-500 ml-auto">Salvando...</span>
             )}
           </div>
           <SheetTitle className="pr-8">
@@ -113,8 +113,8 @@ export function TaskDetailPanel({
                 value={localTask.title}
                 onChange={(e) => updateField('title', e.target.value)}
                 className="text-xl font-semibold border-0 px-0 focus-visible:ring-0 bg-transparent"
-                placeholder="Task title..."
-                aria-label="Task title"
+                placeholder="Título da tarefa..."
+                aria-label="Título da tarefa"
               />
             )}
           </SheetTitle>
@@ -140,7 +140,7 @@ export function TaskDetailPanel({
                 className="flex items-center justify-center gap-1 w-full"
               >
                 <FileCode className="h-3 w-3" />
-                Template
+                Modelo
               </Button>
               <Button
                 variant="outline"
@@ -166,7 +166,7 @@ export function TaskDetailPanel({
               className="flex items-center justify-center gap-1 w-full col-span-2"
             >
               <Monitor className="h-3 w-3" />
-              Preview
+              Visualizar
             </Button>
           )}
         </div>
@@ -179,19 +179,19 @@ export function TaskDetailPanel({
           <TabsList
             className={`grid w-full flex-shrink-0 ${isCodeTask ? (taskSettings.enableAttachments ? 'grid-cols-9' : 'grid-cols-8') : taskSettings.enableAttachments ? 'grid-cols-5' : 'grid-cols-4'}`}
           >
-            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="details">Detalhes</TabsTrigger>
             <TabsTrigger value="progress" className="flex items-center gap-1">
               <NotebookPen className="h-3 w-3" />
-              Progress
+              Progresso
             </TabsTrigger>
             <TabsTrigger value="observations" className="flex items-center gap-1">
               <Eye className="h-3 w-3" />
-              Observations
+              Observações
             </TabsTrigger>
             {taskSettings.enableAttachments && (
               <TabsTrigger value="attachments" className="flex items-center gap-1">
                 <Paperclip className="h-3 w-3" />
-                Attachments
+                Anexos
               </TabsTrigger>
             )}
             {isCodeTask && (
@@ -202,7 +202,7 @@ export function TaskDetailPanel({
                 </TabsTrigger>
                 <TabsTrigger value="agent" className="flex items-center gap-1">
                   <Bot className="h-3 w-3" />
-                  Agent
+                  Agente
                 </TabsTrigger>
                 <TabsTrigger
                   value="changes"
@@ -210,17 +210,17 @@ export function TaskDetailPanel({
                   className="flex items-center gap-1"
                 >
                   <FileDiff className="h-3 w-3" />
-                  Changes
+                  Alterações
                 </TabsTrigger>
                 <TabsTrigger value="review" className="flex items-center gap-1">
                   <ClipboardCheck className="h-3 w-3" />
-                  Review
+                  Revisão
                 </TabsTrigger>
               </>
             )}
             <TabsTrigger value="metrics" className="flex items-center gap-1">
               <BarChart3 className="h-3 w-3" />
-              Metrics
+              Métricas
             </TabsTrigger>
           </TabsList>
 
@@ -238,14 +238,14 @@ export function TaskDetailPanel({
 
             {/* Progress Tab */}
             <TabsContent value="progress" className="mt-0">
-              <FeatureErrorBoundary fallbackTitle="Progress section failed to load">
+              <FeatureErrorBoundary fallbackTitle="Seção de progresso falhou ao carregar">
                 <ProgressTab task={localTask} />
               </FeatureErrorBoundary>
             </TabsContent>
 
             {/* Observations Tab */}
             <TabsContent value="observations" className="mt-0">
-              <FeatureErrorBoundary fallbackTitle="Observations section failed to load">
+              <FeatureErrorBoundary fallbackTitle="Seção de observações falhou ao carregar">
                 <ObservationsSection
                   task={localTask}
                   onAddObservation={async (data) => {
@@ -264,7 +264,7 @@ export function TaskDetailPanel({
             {/* Attachments Tab */}
             {taskSettings.enableAttachments && (
               <TabsContent value="attachments" className="mt-0">
-                <FeatureErrorBoundary fallbackTitle="Attachments section failed to load">
+                <FeatureErrorBoundary fallbackTitle="Seção de anexos falhou ao carregar">
                   <AttachmentsSection task={localTask} />
                 </FeatureErrorBoundary>
               </TabsContent>
@@ -273,7 +273,7 @@ export function TaskDetailPanel({
             {/* Git Tab */}
             {isCodeTask && (
               <TabsContent value="git" className="mt-0">
-                <FeatureErrorBoundary fallbackTitle="Git section failed to load">
+                <FeatureErrorBoundary fallbackTitle="Seção Git falhou ao carregar">
                   <GitSection
                     task={localTask}
                     onGitChange={(git) => updateField('git', git as Task['git'])}
@@ -285,7 +285,7 @@ export function TaskDetailPanel({
             {/* Agent Tab */}
             {isCodeTask && (
               <TabsContent value="agent" className="mt-0">
-                <FeatureErrorBoundary fallbackTitle="Agent panel failed to load">
+                <FeatureErrorBoundary fallbackTitle="Painel do agente falhou ao carregar">
                   <AgentPanel task={localTask} />
                 </FeatureErrorBoundary>
               </TabsContent>
@@ -294,7 +294,7 @@ export function TaskDetailPanel({
             {/* Changes Tab */}
             {isCodeTask && hasWorktree && (
               <TabsContent value="changes" className="mt-0">
-                <FeatureErrorBoundary fallbackTitle="Changes viewer failed to load">
+                <FeatureErrorBoundary fallbackTitle="Visualizador de alterações falhou ao carregar">
                   <DiffViewer
                     task={localTask}
                     onAddComment={(comment: ReviewComment) => {

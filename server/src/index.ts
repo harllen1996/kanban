@@ -21,6 +21,7 @@ import { fileURLToPath } from 'url';
 import { createLogger } from './lib/logger.js';
 import { v1Router } from './routes/v1/index.js';
 import { agentService } from './routes/agents.js';
+import registryAgents from './routes/registry-agents.js';
 import { syncSettingsToServices } from './routes/settings.js';
 import { initAgentStatus } from './routes/agent-status.js';
 import { getTelemetryService } from './services/telemetry-service.js';
@@ -424,6 +425,9 @@ app.use('/api', responseEnvelopeMiddleware);
 // ============================================
 app.use('/api/v1', v1Router);
 app.use('/api', v1Router);
+
+// Agent Registry Routes
+app.use('/api/registry/agents', registryAgents);
 
 // ============================================
 // Static File Serving (Production SPA)

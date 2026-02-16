@@ -47,7 +47,7 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
   };
 
   return (
-    <div className="flex items-center gap-3" role="search" aria-label="Filter tasks">
+    <div className="flex items-center gap-3" role="search" aria-label="Filtrar tarefas">
       {/* Search */}
       <div className="relative flex-1 max-w-sm">
         <Search
@@ -55,11 +55,11 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
           aria-hidden="true"
         />
         <label htmlFor="task-search" className="sr-only">
-          Search tasks
+          Pesquisar tarefas
         </label>
         <Input
           id="task-search"
-          placeholder="Search tasks..."
+          placeholder="Pesquisar tarefas..."
           value={filters.search}
           onChange={(e) => updateSearch(e.target.value)}
           className="pl-9 pr-9"
@@ -68,7 +68,7 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
         {filters.search && (
           <button
             onClick={() => updateSearch('')}
-            aria-label="Clear search"
+            aria-label="Limpar pesquisa"
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -84,11 +84,11 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
         }
         disabled={projectsLoading}
       >
-        <SelectTrigger className="w-[160px]" aria-label="Filter by project">
-          <SelectValue placeholder="All Projects" />
+        <SelectTrigger className="w-[160px]" aria-label="Filtrar por projeto">
+          <SelectValue placeholder="Todos os Projetos" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Projects</SelectItem>
+          <SelectItem value="all">Todos os Projetos</SelectItem>
           {projects.map((project) => (
             <SelectItem key={project.id} value={project.id}>
               {project.label}
@@ -105,11 +105,11 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
         }
         disabled={typesLoading}
       >
-        <SelectTrigger className="w-[160px]" aria-label="Filter by type">
-          <SelectValue placeholder="All Types" />
+        <SelectTrigger className="w-[160px]" aria-label="Filtrar por tipo">
+          <SelectValue placeholder="Todos os Tipos" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Types</SelectItem>
+          <SelectItem value="all">Todos os Tipos</SelectItem>
           {taskTypes.map((type) => {
             const IconComponent = getTypeIcon(type.icon);
             return (
@@ -131,13 +131,13 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
           onFiltersChange({ ...filters, agent: value === 'all' ? null : value })
         }
       >
-        <SelectTrigger className="w-[160px]" aria-label="Filter by agent">
-          <SelectValue placeholder="All Agents" />
+        <SelectTrigger className="w-[160px]" aria-label="Filtrar por agente">
+          <SelectValue placeholder="Todos os Agentes" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Agents</SelectItem>
-          <SelectItem value="auto">Auto (routing)</SelectItem>
-          <SelectItem value="unassigned">Unassigned</SelectItem>
+          <SelectItem value="all">Todos os Agentes</SelectItem>
+          <SelectItem value="auto">Auto (roteamento)</SelectItem>
+          <SelectItem value="unassigned">Não atribuído</SelectItem>
           {agents.map((a) => (
             <SelectItem key={a.type} value={a.type}>
               {a.name}
@@ -151,16 +151,16 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
         <div className="flex items-center gap-2">
           <Badge id="active-filter-count" variant="secondary" className="gap-1" aria-live="polite">
             <Filter className="h-3 w-3" aria-hidden="true" />
-            {activeFilterCount} active {activeFilterCount === 1 ? 'filter' : 'filters'}
+            {activeFilterCount} {activeFilterCount === 1 ? 'filtro ativo' : 'filtros ativos'}
           </Badge>
           <Button
             variant="ghost"
             size="sm"
             onClick={clearAllFilters}
-            aria-label="Clear all filters"
+            aria-label="Limpar todos os filtros"
             className="text-muted-foreground hover:text-foreground"
           >
-            Clear all
+            Limpar
           </Button>
         </div>
       )}

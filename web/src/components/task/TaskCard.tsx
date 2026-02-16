@@ -48,13 +48,13 @@ const blockedCategoryInfo: Record<
   { label: string; shortLabel: string; icon: React.ElementType }
 > = {
   'waiting-on-feedback': {
-    label: 'Waiting on Feedback',
+    label: 'Aguardando Feedback',
     shortLabel: 'Feedback',
     icon: MessageSquare,
   },
-  'technical-snag': { label: 'Technical Snag', shortLabel: 'Snag', icon: Wrench },
-  prerequisite: { label: 'Prerequisite', shortLabel: 'Prereq', icon: Link2 },
-  other: { label: 'Other', shortLabel: 'Other', icon: HelpCircle },
+  'technical-snag': { label: 'Embaralho Técnico', shortLabel: 'Embaralho', icon: Wrench },
+  prerequisite: { label: 'Pré-requisito', shortLabel: 'Préreq', icon: Link2 },
+  other: { label: 'Outro', shortLabel: 'Outro', icon: HelpCircle },
 };
 
 interface TaskCardProps {

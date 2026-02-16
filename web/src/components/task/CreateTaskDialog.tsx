@@ -142,7 +142,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Create New Task</DialogTitle>
+            <DialogTitle>Criar Nova Tarefa</DialogTitle>
           </DialogHeader>
 
           {/* Template selector */}
@@ -151,7 +151,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  <Label className="text-sm">Template</Label>
+                  <Label className="text-sm">Modelo</Label>
                 </div>
                 <Button
                   type="button"
@@ -159,7 +159,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                   size="sm"
                   className="h-6 w-6 p-0"
                   onClick={toggleHelp}
-                  aria-label={showHelp ? 'Hide template help' : 'Show template help'}
+                  aria-label={showHelp ? 'Esconder ajuda' : 'Mostrar ajuda'}
                 >
                   <HelpCircle className="h-4 w-4 text-muted-foreground" />
                 </Button>
@@ -171,26 +171,26 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                   <div className="flex items-start gap-2">
                     <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                     <div className="space-y-1.5">
-                      <p className="font-medium text-sm">Using Templates</p>
+                      <p className="font-medium text-sm">Usando Modelos</p>
                       <ul className="space-y-1 text-xs text-muted-foreground">
                         <li>
-                          • <strong>Simple templates</strong> pre-fill task fields and can include
-                          subtasks
+                          • Modelos <strong>simples</strong> preenchem os campos da tarefa e podem
+                          incluir subtarefas
                         </li>
                         <li>
-                          • <strong>Variables</strong> like{' '}
-                          <code className="px-1 py-0.5 rounded bg-muted">{'{{date}}'}</code> or{' '}
-                          <code className="px-1 py-0.5 rounded bg-muted">{'{{author}}'}</code> are
-                          replaced when creating the task
+                          • Variáveis como{' '}
+                          <code className="px-1 py-0.5 rounded bg-muted">{'{{date}}'}</code> ou{' '}
+                          <code className="px-1 py-0.5 rounded bg-muted">{'{{author}}'}</code> são
+                          substituídas ao criar a tarefa
                         </li>
                         <li>
-                          • <strong>Custom variables</strong> (e.g.,{' '}
-                          <code className="px-1 py-0.5 rounded bg-muted">{'{{bugId}}'}</code>)
-                          prompt you for values
+                          • Variáveis <strong>personalizadas</strong> (ex:{' '}
+                          <code className="px-1 py-0.5 rounded bg-muted">{'{{bugId}}'}</code>) pedem
+                          valores
                         </li>
                         <li>
-                          • <strong>Blueprint templates</strong> create multiple linked tasks with
-                          dependencies
+                          • Modelos com <strong>Blueprint</strong> criam múltiplas tarefas
+                          vinculadas com dependências
                         </li>
                       </ul>
                     </div>
@@ -201,7 +201,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
               <Tabs value={categoryFilter} onValueChange={setCategoryFilter}>
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="all" className="text-xs">
-                    All
+                    Todos
                   </TabsTrigger>
                   <TabsTrigger value="bug" className="text-xs">
                     🐛
@@ -217,10 +217,10 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
 
               <Select value={selectedTemplate || 'none'} onValueChange={handleTemplateSelect}>
                 <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select template..." />
+                  <SelectValue placeholder="Selecione um modelo..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No template</SelectItem>
+                  <SelectItem value="none">Nenhum modelo</SelectItem>
                   {filteredTemplates.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       {template.category && `${getCategoryIcon(template.category)} `}
@@ -249,30 +249,30 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
             ) : (
               <>
                 <div className="grid gap-2">
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">Título</Label>
                   <Input
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter task title..."
+                    placeholder="Digite o título da tarefa..."
                     autoFocus
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">Descrição</Label>
                   <Textarea
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe the task..."
+                    placeholder="Descreva a tarefa..."
                     rows={3}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="type">Type</Label>
+                    <Label htmlFor="type">Tipo</Label>
                     <Select value={type} onValueChange={setType}>
                       <SelectTrigger>
                         <SelectValue />
@@ -294,22 +294,22 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="priority">Priority</Label>
+                    <Label htmlFor="priority">Prioridade</Label>
                     <Select value={priority} onValueChange={(v) => setPriority(v as TaskPriority)}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="low">Baixa</SelectItem>
+                        <SelectItem value="medium">Média</SelectItem>
+                        <SelectItem value="high">Alta</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="project">Project (optional)</Label>
+                  <Label htmlFor="project">Projeto (opcional)</Label>
                   {!showNewProject ? (
                     <Select
                       value={project}
@@ -322,17 +322,17 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select project..." />
+                        <SelectValue placeholder="Selecione um projeto..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">No project</SelectItem>
+                        <SelectItem value="__none__">Sem projeto</SelectItem>
                         {projects.map((proj) => (
                           <SelectItem key={proj.id} value={proj.id}>
                             {proj.label}
                           </SelectItem>
                         ))}
                         <SelectItem value="__new__" className="text-primary">
-                          + New Project
+                          + Novo Projeto
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -341,7 +341,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                       <Input
                         value={newProjectName}
                         onChange={(e) => setNewProjectName(e.target.value)}
-                        placeholder="Enter project name..."
+                        placeholder="Digite o nome do projeto..."
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && newProjectName.trim()) {
@@ -362,10 +362,10 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                           }
                         }}
                       >
-                        Add
+                        Adicionar
                       </Button>
                       <Button type="button" size="sm" variant="outline" onClick={hideNewProject}>
-                        Cancel
+                        Cancelar
                       </Button>
                     </div>
                   )}
@@ -373,16 +373,16 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Sprint (optional)</Label>
+                    <Label>Sprint (opcional)</Label>
                     <Select
                       value={sprint || '__none__'}
                       onValueChange={(v) => setSprint(v === '__none__' ? '' : v)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="No sprint" />
+                        <SelectValue placeholder="Sem sprint" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">No Sprint</SelectItem>
+                        <SelectItem value="__none__">Sem Sprint</SelectItem>
                         {sprints.map((s) => (
                           <SelectItem key={s.id} value={s.id}>
                             {s.label}
@@ -393,7 +393,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                   </div>
 
                   <div className="grid gap-2">
-                    <Label>Agent</Label>
+                    <Label>Agente</Label>
                     <Select value={agent || 'auto'} onValueChange={setAgent}>
                       <SelectTrigger>
                         <SelectValue />
@@ -401,7 +401,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                       <SelectContent>
                         <SelectItem value="auto">
                           <span className="text-muted-foreground">Auto</span>
-                          <span className="text-xs text-muted-foreground ml-1">(routing)</span>
+                          <span className="text-xs text-muted-foreground ml-1">(roteamento)</span>
                         </SelectItem>
                         {enabledAgents.map((a) => (
                           <SelectItem key={a.type} value={a.type}>
@@ -421,7 +421,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
 
                 {subtasks.length > 0 && (
                   <div className="grid gap-2">
-                    <Label>Subtasks ({subtasks.length})</Label>
+                    <Label>Subtarefas ({subtasks.length})</Label>
                     <div className="space-y-1 max-h-40 overflow-y-auto border rounded-md p-2">
                       {subtasks.map((subtask) => (
                         <div
@@ -438,7 +438,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                             size="sm"
                             className="h-6 w-6 p-0"
                             onClick={() => removeSubtask(subtask.id)}
-                            aria-label={`Remove subtask: ${subtask.title}`}
+                            aria-label={`Remover subtarefa: ${subtask.title}`}
                           >
                             <X className="h-3 w-3" />
                           </Button>
@@ -453,10 +453,10 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={!canSubmit(isBlueprint) || isCreating}>
-              {isCreating ? 'Creating...' : isBlueprint ? 'Create Tasks' : 'Create Task'}
+              {isCreating ? 'Criando...' : isBlueprint ? 'Criar Tarefas' : 'Criar Tarefa'}
             </Button>
           </DialogFooter>
         </form>

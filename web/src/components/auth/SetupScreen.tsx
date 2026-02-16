@@ -14,12 +14,12 @@ function getPasswordStrength(password: string): { score: number; label: string; 
   if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
   if (/\d/.test(password)) score++;
   if (/[^a-zA-Z0-9]/.test(password)) score++;
-  
-  if (score <= 1) return { score, label: 'Weak', color: 'bg-red-500' };
-  if (score <= 2) return { score, label: 'Fair', color: 'bg-orange-500' };
-  if (score <= 3) return { score, label: 'Good', color: 'bg-yellow-500' };
-  if (score <= 4) return { score, label: 'Strong', color: 'bg-green-500' };
-  return { score, label: 'Very Strong', color: 'bg-emerald-500' };
+
+  if (score <= 1) return { score, label: 'Fraca', color: 'bg-red-500' };
+  if (score <= 2) return { score, label: 'Razoável', color: 'bg-orange-500' };
+  if (score <= 3) return { score, label: 'Boa', color: 'bg-yellow-500' };
+  if (score <= 4) return { score, label: 'Forte', color: 'bg-green-500' };
+  return { score, label: 'Muito Forte', color: 'bg-emerald-500' };
 }
 
 export function SetupScreen() {
@@ -29,7 +29,7 @@ export function SetupScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Recovery key state
   const [recoveryKey, setRecoveryKey] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState(false);
@@ -42,18 +42,18 @@ export function SetupScreen() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     setError(null);
-    
+
     const result = await setup(password);
-    
+
     if (result.success && result.recoveryKey) {
       setRecoveryKey(result.recoveryKey);
     } else {
-      setError(result.error || 'Setup failed');
+      setError(result.error || 'Falha na configuração');
     }
-    
+
     setIsSubmitting(false);
   };
 
@@ -67,13 +67,15 @@ export function SetupScreen() {
   const downloadRecoveryKey = () => {
     if (!recoveryKey) return;
     const blob = new Blob(
-      [`Veritas Kanban Recovery Key\n\nYour recovery key: ${recoveryKey}\n\nKeep this file safe! You will need it if you forget your password.\n\nGenerated: ${new Date().toISOString()}`],
+      [
+        `Chave de Recuperação Veritas Kanban\n\nSua chave de recuperação: ${recoveryKey}\n\nGuarde este arquivo com segurança! Você precisará dele se esquecer sua senha.\n\nGerado em: ${new Date().toISOString()}`,
+      ],
       { type: 'text/plain' }
     );
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'veritas-kanban-recovery-key.txt';
+    a.download = 'veritas-kanban-chave-recuperacao.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -89,24 +91,22 @@ export function SetupScreen() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 mb-4">
               <Key className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold">Save Your Recovery Key</h1>
+            <h1 className="text-2xl font-bold">Salve Sua Chave de Recuperação</h1>
             <p className="text-muted-foreground">
-              This is the only way to recover your account if you forget your password.
+              Esta é a única forma de recuperar sua conta se você esquecer sua senha.
             </p>
           </div>
 
           <div className="bg-muted/50 border border-border rounded-lg p-4 space-y-3">
-            <div className="font-mono text-xl text-center tracking-wider py-2">
-              {recoveryKey}
-            </div>
+            <div className="font-mono text-xl text-center tracking-wider py-2">{recoveryKey}</div>
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={copyRecoveryKey}>
                 {copiedKey ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                {copiedKey ? 'Copied!' : 'Copy'}
+                {copiedKey ? 'Copiado!' : 'Copiar'}
               </Button>
               <Button variant="outline" className="flex-1" onClick={downloadRecoveryKey}>
                 <Download className="w-4 h-4 mr-2" />
-                Download
+                Baixar
               </Button>
             </div>
           </div>
@@ -118,7 +118,7 @@ export function SetupScreen() {
               onCheckedChange={(checked) => setSavedConfirmed(!!checked)}
             />
             <Label htmlFor="saved-confirm" className="text-sm cursor-pointer">
-              I have saved my recovery key in a safe place
+              Salvei minha chave de recuperação em um local seguro
             </Label>
           </div>
 
@@ -127,7 +127,7 @@ export function SetupScreen() {
             disabled={!savedConfirmed}
             onClick={() => window.location.reload()}
           >
-            Continue to App
+            Continuar para o App
           </Button>
         </div>
       </div>
@@ -141,22 +141,22 @@ export function SetupScreen() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
             <Shield className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold">Secure Your Board</h1>
+          <h1 className="text-2xl font-bold">Proteja Seu Quadro</h1>
           <p className="text-muted-foreground">
-            Create a password to protect your Veritas Kanban board.
+            Crie uma senha para proteger seu quadro Veritas Kanban.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Senha</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password (8+ characters)"
+                placeholder="Digite a senha (8+ caracteres)"
                 className="pr-10"
                 autoFocus
               />
@@ -181,23 +181,23 @@ export function SetupScreen() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Password strength: <span className="font-medium">{strength.label}</span>
+                  Força da senha: <span className="font-medium">{strength.label}</span>
                 </p>
               </div>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirm Password</Label>
+            <Label htmlFor="confirm-password">Confirmar Senha</Label>
             <Input
               id="confirm-password"
               type={showPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm password"
+              placeholder="Confirme a senha"
             />
             {confirmPassword && !passwordsMatch && (
-              <p className="text-xs text-destructive">Passwords do not match</p>
+              <p className="text-xs text-destructive">As senhas não coincidem</p>
             )}
           </div>
 
@@ -208,7 +208,7 @@ export function SetupScreen() {
           )}
 
           <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create Password'}
+            {isSubmitting ? 'Criando...' : 'Criar Senha'}
           </Button>
         </form>
       </div>

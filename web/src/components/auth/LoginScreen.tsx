@@ -13,13 +13,13 @@ export function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Recovery mode state
   const [showRecovery, setShowRecovery] = useState(false);
   const [recoveryKey, setRecoveryKey] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  
+
   // New recovery key display
   const [newRecoveryKey, setNewRecoveryKey] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState(false);
@@ -28,34 +28,34 @@ export function LoginScreen() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     setError(null);
-    
+
     const result = await login(password, rememberMe);
-    
+
     if (!result.success) {
-      setError(result.error || 'Invalid password');
+      setError(result.error || 'Senha inválida');
     }
-    
+
     setIsSubmitting(false);
   };
 
   const handleRecover = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!recoveryKey || !newPassword || newPassword !== confirmNewPassword || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     setError(null);
-    
+
     const result = await recover(recoveryKey, newPassword);
-    
+
     if (result.success && result.recoveryKey) {
       setNewRecoveryKey(result.recoveryKey);
     } else {
-      setError(result.error || 'Recovery failed');
+      setError(result.error || 'Falha na recuperação');
     }
-    
+
     setIsSubmitting(false);
   };
 
@@ -69,13 +69,15 @@ export function LoginScreen() {
   const downloadRecoveryKey = () => {
     if (!newRecoveryKey) return;
     const blob = new Blob(
-      [`Veritas Kanban Recovery Key\n\nYour recovery key: ${newRecoveryKey}\n\nKeep this file safe! You will need it if you forget your password.\n\nGenerated: ${new Date().toISOString()}`],
+      [
+        `Chave de Recuperação Veritas Kanban\n\nSua chave de recuperação: ${newRecoveryKey}\n\nGuarde este arquivo com segurança! Você precisará dele se esquecer sua senha.\n\nGerado em: ${new Date().toISOString()}`,
+      ],
       { type: 'text/plain' }
     );
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'veritas-kanban-recovery-key.txt';
+    a.download = 'veritas-kanban-chave-recuperacao.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -91,9 +93,10 @@ export function LoginScreen() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 mb-4">
               <Key className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold">Password Reset Complete</h1>
+            <h1 className="text-2xl font-bold">Senha Redefinida com Sucesso</h1>
             <p className="text-muted-foreground">
-              Save your new recovery key - you'll need it if you forget your password again.
+              Salve sua nova chave de recuperação - você precisará dela se esquecer sua senha
+              novamente.
             </p>
           </div>
 
@@ -104,11 +107,11 @@ export function LoginScreen() {
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={copyRecoveryKey}>
                 {copiedKey ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                {copiedKey ? 'Copied!' : 'Copy'}
+                {copiedKey ? 'Copiado!' : 'Copiar'}
               </Button>
               <Button variant="outline" className="flex-1" onClick={downloadRecoveryKey}>
                 <Download className="w-4 h-4 mr-2" />
-                Download
+                Baixar
               </Button>
             </div>
           </div>
@@ -120,7 +123,7 @@ export function LoginScreen() {
               onCheckedChange={(checked) => setSavedConfirmed(!!checked)}
             />
             <Label htmlFor="saved-confirm" className="text-sm cursor-pointer">
-              I have saved my recovery key in a safe place
+              Salvei minha chave de recuperação em um local seguro
             </Label>
           </div>
 
@@ -129,7 +132,7 @@ export function LoginScreen() {
             disabled={!savedConfirmed}
             onClick={() => window.location.reload()}
           >
-            Continue to App
+            Continuar para o App
           </Button>
         </div>
       </div>
@@ -140,7 +143,7 @@ export function LoginScreen() {
   if (showRecovery) {
     const passwordsMatch = newPassword === confirmNewPassword;
     const isValid = recoveryKey && newPassword.length >= 8 && passwordsMatch;
-    
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-6">
@@ -148,15 +151,15 @@ export function LoginScreen() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 text-amber-500 mb-4">
               <Key className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold">Reset Password</h1>
+            <h1 className="text-2xl font-bold">Redefinir Senha</h1>
             <p className="text-muted-foreground">
-              Enter your recovery key and a new password.
+              Digite sua chave de recuperação e uma nova senha.
             </p>
           </div>
 
           <form onSubmit={handleRecover} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="recovery-key">Recovery Key</Label>
+              <Label htmlFor="recovery-key">Chave de Recuperação</Label>
               <Input
                 id="recovery-key"
                 type="text"
@@ -169,14 +172,14 @@ export function LoginScreen() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
+              <Label htmlFor="new-password">Nova Senha</Label>
               <div className="relative">
                 <Input
                   id="new-password"
                   type={showPassword ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password (8+ characters)"
+                  placeholder="Digite a nova senha (8+ caracteres)"
                   className="pr-10"
                 />
                 <button
@@ -190,16 +193,16 @@ export function LoginScreen() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+              <Label htmlFor="confirm-new-password">Confirmar Nova Senha</Label>
               <Input
                 id="confirm-new-password"
                 type={showPassword ? 'text' : 'password'}
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                placeholder="Confirm new password"
+                placeholder="Confirme a nova senha"
               />
               {confirmNewPassword && !passwordsMatch && (
-                <p className="text-xs text-destructive">Passwords do not match</p>
+                <p className="text-xs text-destructive">As senhas não coincidem</p>
               )}
             </div>
 
@@ -210,7 +213,7 @@ export function LoginScreen() {
             )}
 
             <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-              {isSubmitting ? 'Resetting...' : 'Reset Password'}
+              {isSubmitting ? 'Redefinindo...' : 'Redefinir Senha'}
             </Button>
 
             <button
@@ -221,7 +224,7 @@ export function LoginScreen() {
               }}
               className="w-full text-sm text-muted-foreground hover:text-foreground"
             >
-              Back to login
+              Voltar para o login
             </button>
           </form>
         </div>
@@ -237,22 +240,20 @@ export function LoginScreen() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
             <Lock className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold">Welcome Back</h1>
-          <p className="text-muted-foreground">
-            Enter your password to access Veritas Kanban.
-          </p>
+          <h1 className="text-2xl font-bold">Bem-vindo de Volta</h1>
+          <p className="text-muted-foreground">Digite sua senha para acessar o Veritas Kanban.</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Senha</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="Digite sua senha"
                 className="pr-10"
                 autoFocus
               />
@@ -273,7 +274,7 @@ export function LoginScreen() {
               onCheckedChange={(checked) => setRememberMe(!!checked)}
             />
             <Label htmlFor="remember-me" className="text-sm cursor-pointer">
-              Remember me for 30 days
+              Lembrar de mim por 30 dias
             </Label>
           </div>
 
@@ -284,7 +285,7 @@ export function LoginScreen() {
           )}
 
           <Button type="submit" className="w-full" disabled={!password || isSubmitting}>
-            {isSubmitting ? 'Logging in...' : 'Login'}
+            {isSubmitting ? 'Entrando...' : 'Entrar'}
           </Button>
 
           <button
@@ -295,7 +296,7 @@ export function LoginScreen() {
             }}
             className="w-full text-sm text-muted-foreground hover:text-foreground"
           >
-            Forgot password?
+            Esqueceu a senha?
           </button>
         </form>
       </div>

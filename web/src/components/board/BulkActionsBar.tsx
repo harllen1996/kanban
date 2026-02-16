@@ -22,25 +22,25 @@ import type { Task, TaskStatus } from '@veritas-kanban/shared';
 const STATUS_BUTTONS: { id: TaskStatus; label: string; color: string; activeColor: string }[] = [
   {
     id: 'todo',
-    label: 'Todo',
+    label: 'A Fazer',
     color: 'border-slate-400 text-slate-600',
     activeColor: 'bg-slate-500 text-white border-slate-500',
   },
   {
     id: 'in-progress',
-    label: 'In Progress',
+    label: 'Em Progresso',
     color: 'border-blue-400 text-blue-600',
     activeColor: 'bg-blue-500 text-white border-blue-500',
   },
   {
     id: 'blocked',
-    label: 'Blocked',
+    label: 'Bloqueado',
     color: 'border-red-400 text-red-600',
     activeColor: 'bg-red-500 text-white border-red-500',
   },
   {
     id: 'done',
-    label: 'Done',
+    label: 'Concluído',
     color: 'border-green-400 text-green-600',
     activeColor: 'bg-green-500 text-white border-green-500',
   },
@@ -122,14 +122,14 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
       if (result.failed.length > 0) {
         toast({
           variant: 'default',
-          title: 'Partial Success',
-          description: `Moved ${result.updated.length} of ${ids.length} tasks. ${result.failed.length} failed.`,
+          title: 'Sucesso Parcial',
+          description: `Movidas ${result.updated.length} de ${ids.length} tarefas. ${result.failed.length} falharam.`,
         });
       } else {
         toast({
           variant: 'default',
-          title: 'Success',
-          description: `Moved ${result.updated.length} task${result.updated.length !== 1 ? 's' : ''}.`,
+          title: 'Sucesso',
+          description: `Movidas ${result.updated.length} tarefa${result.updated.length !== 1 ? 's' : ''}.`,
         });
       }
 
@@ -138,8 +138,8 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Move Failed',
-        description: 'Failed to move selected tasks.',
+        title: 'Falha ao Mover',
+        description: 'Falha ao mover tarefas selecionadas.',
       });
     } finally {
       setIsProcessing(false);
@@ -156,20 +156,20 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
       if (result.failed.length > 0 && result.archived.length > 0) {
         toast({
           variant: 'default',
-          title: 'Partial Archive',
-          description: `Archived ${result.archived.length} of ${taskIds.length} tasks. ${result.failed.length} failed.`,
+          title: 'Arquivamento Parcial',
+          description: `Arquivadas ${result.archived.length} de ${taskIds.length} tarefas. ${result.failed.length} falharam.`,
         });
       } else if (result.failed.length > 0) {
         toast({
           variant: 'destructive',
-          title: 'Archive Failed',
-          description: `Failed to archive all ${taskIds.length} selected tasks.`,
+          title: 'Falha ao Arquivar',
+          description: `Falha ao arquivar todas as ${taskIds.length} tarefas selecionadas.`,
         });
       } else {
         toast({
           variant: 'default',
-          title: 'Success',
-          description: `Archived ${result.archived.length} task${result.archived.length !== 1 ? 's' : ''}.`,
+          title: 'Sucesso',
+          description: `Arquivadas ${result.archived.length} tarefa${result.archived.length !== 1 ? 's' : ''}.`,
         });
       }
 
@@ -177,8 +177,8 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Archive Failed',
-        description: 'Failed to archive selected tasks.',
+        title: 'Falha ao Arquivar',
+        description: 'Falha ao arquivar tarefas selecionadas.',
       });
     } finally {
       setIsProcessing(false);
@@ -195,20 +195,20 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
       if (result.failed.length > 0 && result.demoted.length > 0) {
         toast({
           variant: 'default',
-          title: 'Partial Success',
-          description: `Moved ${result.demoted.length} of ${taskIds.length} tasks to backlog. ${result.failed.length} failed.`,
+          title: 'Sucesso Parcial',
+          description: `Movidas ${result.demoted.length} de ${taskIds.length} tarefas para o backlog. ${result.failed.length} falharam.`,
         });
       } else if (result.failed.length > 0) {
         toast({
           variant: 'destructive',
-          title: 'Move Failed',
-          description: `Failed to move all ${taskIds.length} selected tasks.`,
+          title: 'Falha ao Mover',
+          description: `Falha ao mover todas as ${taskIds.length} tarefas selecionadas.`,
         });
       } else {
         toast({
           variant: 'default',
-          title: 'Success',
-          description: `Moved ${result.demoted.length} task${result.demoted.length !== 1 ? 's' : ''} to backlog.`,
+          title: 'Sucesso',
+          description: `Movidas ${result.demoted.length} tarefa${result.demoted.length !== 1 ? 's' : ''} para o backlog.`,
         });
       }
 
@@ -216,8 +216,8 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Move Failed',
-        description: 'Failed to move selected tasks to backlog.',
+        title: 'Falha ao Mover',
+        description: 'Falha ao mover tarefas selecionadas para o backlog.',
       });
     } finally {
       setIsProcessing(false);
@@ -244,7 +244,7 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
       <div
         className="flex items-center justify-between gap-4 mb-4 p-3 rounded-lg bg-muted/50 border"
         role="toolbar"
-        aria-label="Bulk actions"
+        aria-label="Ações em massa"
       >
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={toggleSelecting}>
@@ -255,9 +255,9 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
             variant="outline"
             size="sm"
             onClick={handleSelectAll}
-            aria-label={allSelected ? 'Deselect all tasks' : 'Select all tasks'}
+            aria-label={allSelected ? 'Desmarcar todas as tarefas' : 'Selecionar todas as tarefas'}
           >
-            {allSelected ? 'Deselect All' : 'Select All'}
+            {allSelected ? 'Desmarcar Todas' : 'Selecionar Todas'}
           </Button>
 
           {/* Status filter buttons */}
@@ -277,7 +277,7 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
                     'text-xs h-7 px-2 border transition-colors',
                     fullySelected ? activeColor : partiallySelected ? `${color} opacity-70` : color
                   )}
-                  aria-label={`Select all ${label} tasks (${count})`}
+                  aria-label={`Selecionar todas as tarefas ${label} (${count})`}
                   aria-pressed={fullySelected}
                 >
                   {label} ({count})
@@ -286,7 +286,9 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
             })}
           </div>
 
-          <span className="text-sm text-muted-foreground ml-1">{selectedCount} selected</span>
+          <span className="text-sm text-muted-foreground ml-1">
+            {selectedCount} selecionada{selectedCount !== 1 ? 's' : ''}
+          </span>
         </div>
 
         {selectedCount > 0 && (
@@ -297,21 +299,21 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
               onValueChange={(value) => setMoveTarget(value as TaskStatus)}
               disabled={isProcessing}
             >
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[160px]">
                 <div className="flex items-center gap-1">
                   <ArrowRight className="h-4 w-4" />
                   <span>
                     {moveTarget
-                      ? (STATUS_BUTTONS.find((s) => s.id === moveTarget)?.label ?? 'Move to...')
-                      : 'Move to...'}
+                      ? (STATUS_BUTTONS.find((s) => s.id === moveTarget)?.label ?? 'Mover para...')
+                      : 'Mover para...'}
                   </span>
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todo">To Do</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="blocked">Blocked</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
+                <SelectItem value="todo">A Fazer</SelectItem>
+                <SelectItem value="in-progress">Em Progresso</SelectItem>
+                <SelectItem value="blocked">Bloqueado</SelectItem>
+                <SelectItem value="done">Concluído</SelectItem>
               </SelectContent>
             </Select>
 
@@ -323,7 +325,7 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
                 disabled={isProcessing}
               >
                 <ArrowRight className="h-4 w-4 mr-1" />
-                {isProcessing ? 'Moving...' : 'Move'}
+                {isProcessing ? 'Movendo...' : 'Mover'}
               </Button>
             )}
 
@@ -335,7 +337,7 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
               disabled={isProcessing}
             >
               <Inbox className="h-4 w-4 mr-1" />
-              To Backlog
+              Para Backlog
             </Button>
 
             {/* Archive */}
@@ -346,7 +348,7 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
               disabled={isProcessing}
             >
               <Archive className="h-4 w-4 mr-1" />
-              Archive
+              Arquivar
             </Button>
 
             {/* Delete */}
@@ -358,7 +360,7 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
               className="text-destructive hover:text-destructive"
             >
               <Trash2 className="h-4 w-4 mr-1" />
-              Delete
+              Excluir
             </Button>
           </div>
         )}
@@ -368,20 +370,21 @@ export function BulkActionsBar({ tasks }: BulkActionsBarProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Delete {selectedCount} task{selectedCount !== 1 ? 's' : ''}?
+              Excluir {selectedCount} tarefa{selectedCount !== 1 ? 's' : ''}?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. The selected tasks will be permanently deleted.
+              Esta ação não pode ser desfeita. As tarefas selecionadas serão permanentemente
+              excluídas.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isProcessing}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteSelected}
               disabled={isProcessing}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isProcessing ? 'Deleting...' : 'Delete'}
+              {isProcessing ? 'Excluindo...' : 'Excluir'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -8,29 +8,29 @@ interface Shortcut {
 
 const shortcuts: { category: string; items: Shortcut[] }[] = [
   {
-    category: 'Navigation',
+    category: 'Navegação',
     items: [
-      { keys: ['j', '↓'], description: 'Select next task' },
-      { keys: ['k', '↑'], description: 'Select previous task' },
-      { keys: ['Enter'], description: 'Open selected task' },
-      { keys: ['Esc'], description: 'Close panel / Clear selection' },
+      { keys: ['j', '↓'], description: 'Selecionar próxima tarefa' },
+      { keys: ['k', '↑'], description: 'Selecionar tarefa anterior' },
+      { keys: ['Enter'], description: 'Abrir tarefa selecionada' },
+      { keys: ['Esc'], description: 'Fechar painel / Limpar seleção' },
     ],
   },
   {
-    category: 'Actions',
+    category: 'Ações',
     items: [
-      { keys: ['c'], description: 'Create new task' },
-      { keys: ['⌘⇧C'], description: 'Open agent chat' },
-      { keys: ['1'], description: 'Move to To Do' },
-      { keys: ['2'], description: 'Move to Planning' },
-      { keys: ['3'], description: 'Move to In Progress' },
-      { keys: ['4'], description: 'Move to Blocked' },
-      { keys: ['5'], description: 'Move to Done' },
+      { keys: ['c'], description: 'Criar nova tarefa' },
+      { keys: ['⌘⇧C'], description: 'Abrir chat do agente' },
+      { keys: ['1'], description: 'Mover para A Fazer' },
+      { keys: ['2'], description: 'Mover para Planejamento' },
+      { keys: ['3'], description: 'Mover para Em Progresso' },
+      { keys: ['4'], description: 'Mover para Bloqueado' },
+      { keys: ['5'], description: 'Mover para Concluído' },
     ],
   },
   {
-    category: 'General',
-    items: [{ keys: ['?'], description: 'Toggle this help' }],
+    category: 'Geral',
+    items: [{ keys: ['?'], description: 'Mostrar/ocultar esta ajuda' }],
   },
 ];
 
@@ -49,12 +49,12 @@ export function KeyboardShortcutsDialog() {
     <Dialog open={isHelpOpen} onOpenChange={(open) => !open && closeHelpDialog()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">⌨️ Keyboard Shortcuts</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">⌨️ Atalhos de Teclado</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-2">
           {shortcuts.map((section) => (
-            <section key={section.category} aria-label={`${section.category} shortcuts`}>
+            <section key={section.category} aria-label={`Atalhos de ${section.category}`}>
               <h3 className="text-sm font-semibold text-muted-foreground mb-3">
                 {section.category}
               </h3>
@@ -67,7 +67,7 @@ export function KeyboardShortcutsDialog() {
                         <span key={j} className="flex items-center gap-1">
                           {j > 0 && (
                             <span className="text-muted-foreground text-xs" aria-hidden="true">
-                              or
+                              ou
                             </span>
                           )}
                           <KeyBadge>{key}</KeyBadge>
@@ -82,7 +82,7 @@ export function KeyboardShortcutsDialog() {
         </div>
 
         <div className="text-xs text-muted-foreground text-center pt-2 border-t">
-          Press <KeyBadge>?</KeyBadge> anytime to toggle this help
+          Pressione <KeyBadge>?</KeyBadge> a qualquer momento para mostrar esta ajuda
         </div>
       </DialogContent>
     </Dialog>

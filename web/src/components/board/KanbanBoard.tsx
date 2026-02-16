@@ -34,10 +34,10 @@ const Dashboard = lazy(() =>
 );
 
 const COLUMNS: { id: TaskStatus; title: string }[] = [
-  { id: 'todo', title: 'To Do' },
-  { id: 'in-progress', title: 'In Progress' },
-  { id: 'blocked', title: 'Blocked' },
-  { id: 'done', title: 'Done' },
+  { id: 'todo', title: 'A Fazer' },
+  { id: 'in-progress', title: 'Em Progresso' },
+  { id: 'blocked', title: 'Bloqueado' },
+  { id: 'done', title: 'Concluído' },
 ];
 
 export function KanbanBoard() {
@@ -209,7 +209,7 @@ export function KanbanBoard() {
     return (
       <div className="flex items-center justify-center h-96" role="alert">
         <div className="text-center space-y-2">
-          <div className="text-destructive font-medium">Error loading tasks</div>
+          <div className="text-destructive font-medium">Erro ao carregar tarefas</div>
           <div className="text-sm text-muted-foreground">{error.message}</div>
         </div>
       </div>
@@ -228,7 +228,7 @@ export function KanbanBoard() {
             className="text-muted-foreground shrink-0"
           >
             <CheckSquare className="h-4 w-4 mr-1" />
-            Select
+            Selecionar
           </Button>
         )}
       </div>
@@ -251,7 +251,7 @@ export function KanbanBoard() {
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
               >
-                <div className="grid grid-cols-4 gap-4" role="group" aria-label="Kanban columns">
+                <div className="kanban-columns-container" role="group" aria-label="Kanban columns">
                   {COLUMNS.map((column) => (
                     <KanbanColumn
                       key={column.id}
@@ -271,7 +271,7 @@ export function KanbanBoard() {
                 </DragOverlay>
               </DndContext>
             ) : (
-              <div className="grid grid-cols-4 gap-4" role="group" aria-label="Kanban columns">
+              <div className="kanban-columns-container" role="group" aria-label="Kanban columns">
                 {COLUMNS.map((column) => (
                   <KanbanColumn
                     key={column.id}
@@ -307,7 +307,7 @@ export function KanbanBoard() {
                 className="mt-6 border-t pt-4 flex items-center justify-center py-8 text-muted-foreground"
                 role="status"
               >
-                Loading dashboard…
+                Carregando dashboard…
               </div>
             }
           >
