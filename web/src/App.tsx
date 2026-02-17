@@ -15,6 +15,7 @@ import { ErrorBoundary } from './components/shared/ErrorBoundary';
 import { SkipToContent } from './components/shared/SkipToContent';
 import { LiveAnnouncerProvider } from './components/shared/LiveAnnouncer';
 import { FloatingChat } from './components/chat/FloatingChat';
+import { GameTestPage } from './game';
 
 // Lazy-load ActivityFeed and BacklogPage to keep initial bundle small
 const ActivityFeed = lazy(() =>
@@ -122,6 +123,10 @@ function MainContent() {
         <WorkflowsPage onBack={() => setView('board')} />
       </Suspense>
     );
+  }
+
+  if (view === 'game-test') {
+    return <GameTestPage />;
   }
 
   return <KanbanBoard />;

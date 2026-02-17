@@ -12,6 +12,7 @@ import {
   Workflow,
   Bot,
   Menu,
+  Gamepad2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CreateTaskDialog } from '@/components/task/CreateTaskDialog';
@@ -156,6 +157,15 @@ export function Header() {
               title="Controle de Agentes"
             >
               <Bot className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setView('game-test')}
+              aria-label="Jogo"
+              title="Jogo Gamificado"
+            >
+              <Gamepad2 className="h-4 w-4" aria-hidden="true" />
             </Button>
             {/* Botão de menu mobile */}
             <Button
