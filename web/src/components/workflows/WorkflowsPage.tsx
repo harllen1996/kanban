@@ -45,13 +45,13 @@ export function WorkflowsPage({ onBack }: WorkflowsPageProps) {
     const fetchWorkflows = async () => {
       try {
         const response = await fetch('/api/workflows');
-        if (!response.ok) throw new Error('Failed to fetch workflows');
+        if (!response.ok) throw new Error('Falha ao carregar workflows');
         const json = await response.json();
         setWorkflows(json.data ?? json);
       } catch (error) {
         toast({
-          title: '❌ Failed to load workflows',
-          description: error instanceof Error ? error.message : 'Unknown error',
+          title: '❌ Falha ao carregar workflows',
+          description: error instanceof Error ? error.message : 'Erro desconhecido',
         });
       } finally {
         setIsLoading(false);
@@ -114,7 +114,7 @@ export function WorkflowsPage({ onBack }: WorkflowsPageProps) {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Board
+            Voltar ao Quadro
           </Button>
           <h1 className="text-2xl font-bold">Workflows</h1>
           <Badge variant="secondary">{filteredWorkflows.length} workflows</Badge>
@@ -122,7 +122,7 @@ export function WorkflowsPage({ onBack }: WorkflowsPageProps) {
 
         <Button onClick={() => setShowDashboard(true)}>
           <BarChart3 className="h-4 w-4 mr-2" />
-          Dashboard
+          Painel
         </Button>
       </div>
 
@@ -130,7 +130,7 @@ export function WorkflowsPage({ onBack }: WorkflowsPageProps) {
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search workflows..."
+          placeholder="Buscar workflows..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10"
@@ -146,7 +146,7 @@ export function WorkflowsPage({ onBack }: WorkflowsPageProps) {
         </div>
       ) : filteredWorkflows.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          {search ? 'No workflows match your search' : 'No workflows available'}
+          {search ? 'Nenhum workflow corresponde à sua busca' : 'Nenhum workflow disponível'}
         </div>
       ) : (
         <div className="space-y-4">
@@ -182,7 +182,8 @@ function WorkflowCard({ workflow, onStartRun, onViewRuns }: WorkflowCardProps) {
             </Badge>
             {workflow.activeRunCount !== undefined && workflow.activeRunCount > 0 && (
               <Badge variant="secondary" className="text-xs">
-                {workflow.activeRunCount} active run{workflow.activeRunCount !== 1 ? 's' : ''}
+                {workflow.activeRunCount} execução{workflow.activeRunCount !== 1 ? 'ões' : ''} ativa
+                {workflow.activeRunCount !== 1 ? 's' : ''}
               </Badge>
             )}
           </div>
@@ -194,11 +195,11 @@ function WorkflowCard({ workflow, onStartRun, onViewRuns }: WorkflowCardProps) {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Users className="h-4 w-4" />
-              <span>{workflow.agents?.length ?? 0} agents</span>
+              <span>{workflow.agents?.length ?? 0} agentes</span>
             </div>
             <div className="flex items-center gap-1">
               <ListOrdered className="h-4 w-4" />
-              <span>{workflow.steps?.length ?? 0} steps</span>
+              <span>{workflow.steps?.length ?? 0} etapas</span>
             </div>
           </div>
         </div>
@@ -206,11 +207,11 @@ function WorkflowCard({ workflow, onStartRun, onViewRuns }: WorkflowCardProps) {
         <div className="flex flex-col gap-2 shrink-0">
           <Button size="sm" onClick={onStartRun}>
             <Play className="h-3 w-3 mr-1" />
-            Start Run
+            Iniciar Execução
           </Button>
           {workflow.activeRunCount !== undefined && workflow.activeRunCount > 0 && (
             <Button size="sm" variant="outline" onClick={onViewRuns}>
-              View Runs
+              Ver Execuções
             </Button>
           )}
         </div>
