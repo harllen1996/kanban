@@ -165,18 +165,18 @@ export function WorkflowRunView({ runId, onBack }: WorkflowRunViewProps) {
         method: 'POST',
       });
 
-      if (!response.ok) throw new Error('Failed to resume workflow run');
+      if (!response.ok) throw new Error('Falha ao retomar execução do workflow');
 
       toast({
-        title: 'Workflow resumed',
-        description: 'The workflow run has been resumed',
+        title: 'Workflow retomado',
+        description: 'A execução do workflow foi retomada',
       });
 
       fetchRun();
     } catch (error) {
       toast({
-        title: '❌ Failed to resume workflow run',
-        description: error instanceof Error ? error.message : 'Unknown error',
+        title: '❌ Falha ao retomar execução do workflow',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   };
@@ -191,7 +191,11 @@ export function WorkflowRunView({ runId, onBack }: WorkflowRunViewProps) {
   }
 
   if (!run) {
-    return <div className="text-center py-12 text-muted-foreground">Workflow run not found</div>;
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        Execução do workflow não encontrada
+      </div>
+    );
   }
 
   const workflowName = workflow?.name ?? `Workflow ${run.workflowId}`;
@@ -210,27 +214,27 @@ export function WorkflowRunView({ runId, onBack }: WorkflowRunViewProps) {
     pending: {
       icon: Clock,
       color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-      label: 'Pending',
+      label: 'Pendente',
     },
     running: {
       icon: PlayCircle,
       color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      label: 'Running',
+      label: 'Em Execução',
     },
     completed: {
       icon: CheckCircle2,
       color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      label: 'Completed',
+      label: 'Concluído',
     },
     failed: {
       icon: XCircle,
       color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      label: 'Failed',
+      label: 'Falhou',
     },
     blocked: {
       icon: AlertCircle,
       color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-      label: 'Blocked',
+      label: 'Bloqueado',
     },
   };
 
@@ -244,7 +248,7 @@ export function WorkflowRunView({ runId, onBack }: WorkflowRunViewProps) {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Runs
+            Voltar para Execuções
           </Button>
           <div>
             <h1 className="text-2xl font-bold">{workflowName}</h1>
@@ -260,7 +264,7 @@ export function WorkflowRunView({ runId, onBack }: WorkflowRunViewProps) {
           {run.status === 'blocked' && (
             <Button size="sm" onClick={handleResume}>
               <PlayCircle className="h-4 w-4 mr-1" />
-              Resume
+              Retomar
             </Button>
           )}
         </div>
@@ -270,17 +274,17 @@ export function WorkflowRunView({ runId, onBack }: WorkflowRunViewProps) {
       <div className="p-6 rounded-lg border bg-card space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="text-lg font-semibold">Overall Progress</h2>
+            <h2 className="text-lg font-semibold">Progresso Geral</h2>
             <p className="text-sm text-muted-foreground">
-              Step {completedSteps} of {totalSteps}
+              Passo {completedSteps} de {totalSteps}
             </p>
           </div>
           <div className="text-right space-y-1">
             <div className="text-sm text-muted-foreground">
-              Duration: {Math.floor(duration / 60)}m {duration % 60}s
+              Duração: {Math.floor(duration / 60)}m {duration % 60}s
             </div>
             <div className="text-sm text-muted-foreground">
-              Started: {new Date(run.startedAt).toLocaleString()}
+              Iniciado: {new Date(run.startedAt).toLocaleString()}
             </div>
           </div>
         </div>
@@ -409,27 +413,27 @@ function StepCard({ stepDef, stepRun, index, isExpanded, onToggleExpand }: StepC
             )}
             {stepRun.retries > 0 && (
               <Badge variant="secondary" className="text-xs">
-                Retry {stepRun.retries}
+                Tentativa {stepRun.retries}
               </Badge>
             )}
           </div>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             {stepRun.startedAt && (
-              <div>Started: {new Date(stepRun.startedAt).toLocaleTimeString()}</div>
+              <div>Iniciado: {new Date(stepRun.startedAt).toLocaleTimeString()}</div>
             )}
-            {stepRun.duration !== undefined && <div>Duration: {stepRun.duration}s</div>}
+            {stepRun.duration !== undefined && <div>Duração: {stepRun.duration}s</div>}
           </div>
 
           {stepRun.error && (
             <div className="mt-2 p-2 rounded bg-destructive/10 text-destructive text-sm">
-              <strong>Error:</strong> {stepRun.error}
+              <strong>Erro:</strong> {stepRun.error}
             </div>
           )}
 
           {isExpanded && stepRun.output && (
             <div className="mt-3 p-3 rounded bg-secondary text-sm font-mono whitespace-pre-wrap">
-              <strong>Output:</strong>
+              <strong>Saída:</strong>
               <br />
               {stepRun.output}
             </div>
