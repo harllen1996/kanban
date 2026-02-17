@@ -45,9 +45,97 @@ export class InteractionManager {
   private setupInteraction() {
     if (!this.config.enabled) return;
 
+    // Eventos de mouse
     this.scene.input.on('pointerdown', this.handlePointerDown, this);
     this.scene.input.on('pointermove', this.handlePointerMove, this);
     this.scene.input.on('pointerup', this.handlePointerUp, this);
+
+    // Suporte a touch para mobile
+    this.scene.input.addPointer(2); // Suportar até 2 toques simultâneos
+
+    // Eventos de touch
+    this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.isDown) {
+        this.handleTouchStart(pointer);
+      }
+    });
+
+    this.scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.isDown) {
+        this.handleTouchMove(pointer);
+      }
+    });
+
+    this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      this.handleTouchEnd(pointer);
+    });
+
+    // Pinch zoom para mobile
+    this.setupPinchZoom();
+  }
+
+  // Touch handlers
+  private handleTouchStart(pointer: Phaser.Input.Pointer) {
+    this.currentClick = {
+      taskId: '',
+      x: pointer.x,
+      y: pointer.y,
+      startTime: Date.now(),
+    };
+  }
+
+  private handleTouchMove(pointer: Phaser.Input.Pointer) {
+    if (!this.currentClick) return;
+
+    const dx = pointer.x - this.currentClick.x;
+    const dy = pointer.y - this.currentClick.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > this.clickThreshold) {
+      // É um drag, não um tap
+      this.currentClick = null;
+    }
+  }
+
+  private handleTouchEnd(pointer: Phaser.Input.Pointer) {
+    if (!this.currentClick) return;
+
+    const duration = Date.now() - this.currentClick.startTime;
+
+    // Se foi rápido e sem movimento muito, é um tap
+    if (duration < 300) {
+      this.scene.events.emit('task-click', pointer.x, pointer.y);
+    }
+
+    this.currentClick = null;
+  }
+
+  // Pinch zoom para mobile
+  private pinchStartDistance: number = 0;
+  private pinchStartZoom: number = 1;
+
+  private setupPinchZoom() {
+    this.scene.input.on('pointermove', (pointer1: Phaser.Input.Pointer) => {
+      const pointer2 = this.scene.input.pointer2;
+
+      if (pointer2 && pointer1.isDown && pointer2.isDown) {
+        // Dois dedos pressionados = pinch
+        const dx = pointer1.x - pointer2.x;
+        const dy = pointer1.y - pointer2.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (this.pinchStartDistance === 0) {
+          this.pinchStartDistance = distance;
+          this.pinchStartZoom = this.config.zoomLevel;
+        } else {
+          const scale = distance / this.pinchStartDistance;
+          const newZoom = Math.max(0.5, Math.min(2, this.pinchStartZoom * scale));
+          this.setZoom(newZoom);
+        }
+      } else {
+        this.pinchStartDistance = 0;
+      }
+    });
   }
 
   // Detectar clique (movimento menor que threshold)

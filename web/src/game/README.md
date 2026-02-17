@@ -213,10 +213,10 @@ const moveTask = (taskId: string, newStatus: string) => {
 
 ## Limitações
 
+- ✅ ~~Não suporta touch em dispositivos móveis~~ **CORRIGIDO!**
 - ❌ Não funciona offline (requer internet para Phaser)
 - ❌ Sprites são pixel art simples (sem assets externos)
 - ❌ Movimento é animado (não instantâneo)
-- ❌ Não suporta touch em dispositivos móveis (ainda)
 
 ---
 
@@ -224,7 +224,7 @@ const moveTask = (taskId: string, newStatus: string) => {
 
 ### Planejado
 
-- [ ] Suporte a touch
+- [x] ✅ Suporte a touch (implementado!)
 - [ ] Áudio e efeitos sonoros
 - [ ] Exportar para PNG/SVG
 - [ ] Integração com outras APIs
