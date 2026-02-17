@@ -1,10 +1,11 @@
 /**
  * KanbanGame - Componente de gamificação do Veritas Kanban
- * Sprint 1: MVP Visual com escritório responsivo e animações
+ * Sprint 2: Animações e movimento entre salas
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Phaser from 'phaser';
+import AnimationManager, { detectStatusChanges } from './AnimationManager';
 
 // Tipos
 interface KanbanGameProps {
@@ -38,6 +39,8 @@ class KanbanGameScene extends Phaser.Scene {
   private graphics!: Phaser.GameObjects.Graphics;
   private titleText!: Phaser.GameObjects.Text;
   private statsText!: Phaser.GameObjects.Text;
+  private animationManager!: AnimationManager;
+  private previousTasks: Map<string, { status: string }> = new Map();
 
   constructor() {
     super({ key: 'KanbanGameScene' });
@@ -51,8 +54,19 @@ class KanbanGameScene extends Phaser.Scene {
   create() {
     this.graphics = this.add.graphics();
 
+    // Inicializar gerenciador de animações
+    this.animationManager = new AnimationManager(this);
+
     // Desenhar escritório inicial
     this.drawOffice();
+
+    // Registrar salas no AnimationManager
+    if (this.rooms) {
+      this.animationManager.registerRoom('todo', this.rooms.todo);
+      this.animationManager.registerRoom('in-progress', this.rooms.inProgress);
+      this.animationManager.registerRoom('blocked', this.rooms.blocked);
+      this.animationManager.registerRoom('done', this.rooms.done);
+    }
 
     // Criar personagens
     this.createCharacters();
@@ -77,6 +91,11 @@ class KanbanGameScene extends Phaser.Scene {
       .setOrigin(0);
 
     this.updateStats();
+
+    // Salvar estado inicial das tarefas
+    this.tasks.forEach((task) => {
+      this.previousTasks.set(task.id, { status: task.status });
+    });
 
     // Resize handler
     this.scale.on('resize', this.handleResize, this);
@@ -408,9 +427,41 @@ class KanbanGameScene extends Phaser.Scene {
   }
 
   updateTasks(tasks: TaskData[]) {
+    // Detectar mudanças de status
+    const changes = detectStatusChanges(this.previousTasks, tasks);
+
+    // Animar personagens que mudaram de status
+    changes.forEach((change) => {
+      const character = this.characters.get(change.id);
+      if (character && this.animationManager) {
+        // Calcular caminho
+        const path = this.animationManager.calculatePath(change.oldStatus, change.newStatus);
+
+        // Animar movimento
+        this.animationManager.animateMovement(character, path, 1500, () => {
+          // Efeito de chegada
+          if (change.newStatus === 'done') {
+            this.animationManager.createCelebrationEffect(character.x, character.y);
+          } else if (change.newStatus === 'blocked') {
+            this.animationManager.createBlockedEffect(character.x, character.y);
+          }
+        });
+      }
+    });
+
+    // Atualizar estado
     this.tasks = tasks;
-    this.createCharacters();
-    this.updateStats();
+
+    // Atualizar mapa de estados anteriores
+    tasks.forEach((task) => {
+      this.previousTasks.set(task.id, { status: task.status });
+    });
+
+    // Recriar personagens após animação
+    this.time.delayedCall(1600, () => {
+      this.createCharacters();
+      this.updateStats();
+    });
   }
 }
 
