@@ -1,13 +1,9 @@
 /**
  * KanbanGame - Componente de gamificação do Veritas Kanban
- *
- * Renderiza um escritório virtual com personagens pixel art
- * que representam as tarefas do Kanban.
- *
- * Sprint 0: Setup inicial - componente wrapper isolado
+ * Sprint 1: MVP Visual com escritório responsivo e animações
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Phaser from 'phaser';
 
 // Tipos
@@ -17,7 +13,7 @@ interface KanbanGameProps {
   onTaskMove?: (taskId: string, newStatus: string) => void;
 }
 
-interface TaskData {
+export interface TaskData {
   id: string;
   title: string;
   status: 'todo' | 'in-progress' | 'blocked' | 'done';
@@ -25,38 +21,23 @@ interface TaskData {
   type?: string;
 }
 
-// Configuração do jogo
-const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
-  type: Phaser.AUTO,
-  width: '100%',
-  height: '100%',
-  backgroundColor: '#1a1a2e',
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-  },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      gravity: { x: 0, y: 0 },
-      debug: false,
-    },
-  },
-};
-
-// Posições das "salas" do escritório
-const ROOM_POSITIONS = {
-  todo: { x: 100, y: 300, label: 'Sala de Espera' },
-  'in-progress': { x: 400, y: 300, label: 'Área de Trabalho' },
-  blocked: { x: 250, y: 500, label: 'Zona Bloqueada' },
-  done: { x: 700, y: 300, label: 'Área de Sucesso' },
-};
+// Dimensões das salas
+interface RoomDimensions {
+  todo: { x: number; y: number; width: number; height: number };
+  inProgress: { x: number; y: number; width: number; height: number };
+  blocked: { x: number; y: number; width: number; height: number };
+  done: { x: number; y: number; width: number; height: number };
+}
 
 // Classe principal do jogo
 class KanbanGameScene extends Phaser.Scene {
   private tasks: TaskData[] = [];
   private characters: Map<string, Phaser.GameObjects.Container> = new Map();
   private onTaskClick?: (taskId: string) => void;
+  private rooms: RoomDimensions | null = null;
+  private graphics!: Phaser.GameObjects.Graphics;
+  private titleText!: Phaser.GameObjects.Text;
+  private statsText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'KanbanGameScene' });
@@ -68,92 +49,217 @@ class KanbanGameScene extends Phaser.Scene {
   }
 
   create() {
-    // Desenhar background do escritório
+    this.graphics = this.add.graphics();
+
+    // Desenhar escritório inicial
     this.drawOffice();
 
-    // Criar personagens para cada tarefa
+    // Criar personagens
     this.createCharacters();
 
-    // Mostrar instruções
-    this.add
-      .text(400, 30, '🎮 Veritas Kanban - Gamificado', {
-        fontSize: '24px',
+    // Título
+    this.titleText = this.add
+      .text(this.cameras.main.width / 2, 25, '🎮 Veritas Kanban - Escritório Virtual', {
+        fontSize: '20px',
         color: '#ffffff',
         fontFamily: 'Arial',
+        fontStyle: 'bold',
       })
       .setOrigin(0.5);
+
+    // Estatísticas
+    this.statsText = this.add
+      .text(10, 10, '', {
+        fontSize: '12px',
+        color: '#888888',
+        fontFamily: 'Arial',
+      })
+      .setOrigin(0);
+
+    this.updateStats();
+
+    // Resize handler
+    this.scale.on('resize', this.handleResize, this);
+  }
+
+  private handleResize() {
+    this.drawOffice();
+    this.createCharacters();
+    this.titleText.setPosition(this.cameras.main.width / 2, 25);
+    this.updateStats();
   }
 
   private drawOffice() {
-    const graphics = this.add.graphics();
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+    const graphics = this.graphics;
 
-    // Fundo
+    graphics.clear();
+
+    // Fundo gradiente
+    const gradient = graphics.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, 0x1a1a2e);
+    gradient.addColorStop(1, 0x16213e);
     graphics.fillStyle(0x1a1a2e, 1);
-    graphics.fillRect(0, 0, 800, 600);
+    graphics.fillRect(0, 0, width, height);
 
-    // Sala de Espera (todo)
-    graphics.fillStyle(0x2d3436, 1);
-    graphics.fillRoundedRect(20, 150, 180, 300, 10);
-    this.add
-      .text(110, 170, '🪑 Sala de Espera', {
-        fontSize: '14px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(110, 190, '(A Fazer)', {
-        fontSize: '12px',
-        color: '#888888',
-      })
-      .setOrigin(0.5);
+    // Grid do piso
+    graphics.lineStyle(1, 0x2d3436, 0.2);
+    const gridSize = 40;
+    for (let x = 0; x < width; x += gridSize) {
+      graphics.beginPath();
+      graphics.moveTo(x, 50);
+      graphics.lineTo(x, height);
+      graphics.strokePath();
+    }
+    for (let y = 50; y < height; y += gridSize) {
+      graphics.beginPath();
+      graphics.moveTo(0, y);
+      graphics.lineTo(width, y);
+      graphics.strokePath();
+    }
 
-    // Área de Trabalho (in-progress)
-    graphics.fillStyle(0x0984e3, 0.3);
-    graphics.fillRoundedRect(300, 150, 200, 300, 10);
-    this.add
-      .text(400, 170, '💻 Área de Trabalho', {
-        fontSize: '14px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(400, 190, '(Em Progresso)', {
-        fontSize: '12px',
-        color: '#888888',
-      })
-      .setOrigin(0.5);
+    // Calcular dimensões das salas (responsivo)
+    const padding = 15;
+    const topMargin = 55;
+    const bottomMargin = 15;
+    const availableHeight = height - topMargin - bottomMargin;
+    const roomWidth = (width - padding * 5) / 4;
 
-    // Zona Bloqueada (blocked)
-    graphics.fillStyle(0xd63031, 0.3);
-    graphics.fillRoundedRect(200, 450, 200, 130, 10);
-    this.add
-      .text(300, 470, '🚧 Zona Bloqueada', {
-        fontSize: '14px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(300, 490, '(Bloqueado)', {
-        fontSize: '12px',
-        color: '#888888',
-      })
-      .setOrigin(0.5);
+    this.rooms = {
+      todo: { x: padding, y: topMargin, width: roomWidth, height: availableHeight },
+      inProgress: {
+        x: padding * 2 + roomWidth,
+        y: topMargin,
+        width: roomWidth,
+        height: availableHeight,
+      },
+      blocked: {
+        x: padding * 3 + roomWidth * 2,
+        y: topMargin,
+        width: roomWidth,
+        height: availableHeight,
+      },
+      done: {
+        x: padding * 4 + roomWidth * 3,
+        y: topMargin,
+        width: roomWidth,
+        height: availableHeight,
+      },
+    };
 
-    // Área de Sucesso (done)
-    graphics.fillStyle(0x00b894, 0.3);
-    graphics.fillRoundedRect(580, 150, 200, 300, 10);
+    // Desenhar cada sala
+    this.drawRoom(this.rooms.todo, 'SALA DE ESPERA', 'A Fazer', 0x2d3436, 0x636e72, '🪑');
+    this.drawRoom(
+      this.rooms.inProgress,
+      'ÁREA DE TRABALHO',
+      'Em Progresso',
+      0x0984e3,
+      0x74b9ff,
+      '💻'
+    );
+    this.drawRoom(this.rooms.blocked, 'ZONA BLOQUEADA', 'Bloqueado', 0xd63031, 0xff7675, '🚧');
+    this.drawRoom(this.rooms.done, 'ÁREA DE SUCESSO', 'Concluído', 0x00b894, 0x55efc4, '🎉');
+  }
+
+  private drawRoom(
+    dim: { x: number; y: number; width: number; height: number },
+    title: string,
+    subtitle: string,
+    bgColor: number,
+    borderColor: number,
+    emoji: string
+  ) {
+    const graphics = this.graphics;
+
+    // Sombra
+    graphics.fillStyle(0x000000, 0.3);
+    graphics.fillRoundedRect(dim.x + 4, dim.y + 4, dim.width, dim.height, 12);
+
+    // Background
+    graphics.fillStyle(bgColor, 0.85);
+    graphics.fillRoundedRect(dim.x, dim.y, dim.width, dim.height, 12);
+
+    // Borda
+    graphics.lineStyle(2, borderColor, 0.9);
+    graphics.strokeRoundedRect(dim.x, dim.y, dim.width, dim.height, 12);
+
+    // Emoji
     this.add
-      .text(680, 170, '🎉 Área de Sucesso', {
-        fontSize: '14px',
+      .text(dim.x + dim.width / 2, dim.y + 30, emoji, {
+        fontSize: '28px',
+      })
+      .setOrigin(0.5)
+      .setDepth(1);
+
+    // Título
+    this.add
+      .text(dim.x + dim.width / 2, dim.y + 60, title, {
+        fontSize: '11px',
         color: '#ffffff',
+        fontFamily: 'Arial',
+        fontStyle: 'bold',
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(1);
+
+    // Subtítulo
     this.add
-      .text(680, 190, '(Concluído)', {
-        fontSize: '12px',
-        color: '#888888',
+      .text(dim.x + dim.width / 2, dim.y + 75, subtitle, {
+        fontSize: '10px',
+        color: '#b2bec3',
+        fontFamily: 'Arial',
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(1);
+
+    // Linha divisória
+    graphics.lineStyle(1, borderColor, 0.3);
+    graphics.beginPath();
+    graphics.moveTo(dim.x + 10, dim.y + 95);
+    graphics.lineTo(dim.x + dim.width - 10, dim.y + 95);
+    graphics.strokePath();
+
+    // Decorações específicas por sala
+    this.drawRoomDecorations(dim, bgColor, borderColor);
+  }
+
+  private drawRoomDecorations(
+    dim: { x: number; y: number; width: number; height: number },
+    bgColor: number,
+    borderColor: number
+  ) {
+    const graphics = this.graphics;
+
+    // Sala de Espera: cadeiras
+    graphics.fillStyle(borderColor, 0.2);
+    for (let i = 0; i < 3; i++) {
+      graphics.fillRoundedRect(dim.x + 15, dim.y + 110 + i * 50, dim.width - 30, 35, 5);
+    }
+
+    // Área de Trabalho: mesas
+    graphics.fillStyle(0x636e72, 0.4);
+    for (let i = 0; i < 3; i++) {
+      graphics.fillRect(dim.x + 15, dim.y + 110 + i * 50, dim.width - 30, 35);
+      // Monitor
+      graphics.fillStyle(0x74b9ff, 0.3);
+      graphics.fillRect(dim.x + 25, dim.y + 115 + i * 50, dim.width - 50, 20);
+      graphics.fillStyle(0x636e72, 0.4);
+    }
+
+    // Zona Bloqueada: obstáculos
+    graphics.fillStyle(0xff7675, 0.3);
+    graphics.fillRect(dim.x + 20, dim.y + 120, 40, 60);
+    graphics.fillRect(dim.x + dim.width - 60, dim.y + 200, 50, 50);
+    // Cones
+    this.add.text(dim.x + 25, dim.y + 125, '🚧', { fontSize: '20px' }).setDepth(1);
+    this.add.text(dim.x + dim.width - 55, dim.y + 205, '⚠️', { fontSize: '20px' }).setDepth(1);
+
+    // Área de Sucesso: estrelas/confetes
+    graphics.fillStyle(0x55efc4, 0.2);
+    for (let i = 0; i < 5; i++) {
+      graphics.fillCircle(dim.x + 20 + i * ((dim.width - 40) / 4), dim.y + dim.height - 50, 12);
+    }
   }
 
   private createCharacters() {
@@ -161,57 +267,91 @@ class KanbanGameScene extends Phaser.Scene {
     this.characters.forEach((char) => char.destroy());
     this.characters.clear();
 
-    // Contador por status para posicionar
-    const countByStatus: Record<string, number> = {
-      todo: 0,
-      'in-progress': 0,
-      blocked: 0,
-      done: 0,
-    };
+    if (!this.rooms) return;
+
+    const countByStatus = { todo: 0, 'in-progress': 0, blocked: 0, done: 0 };
 
     this.tasks.forEach((task) => {
-      const pos = this.getTaskPosition(task, countByStatus[task.status]);
-      countByStatus[task.status]++;
+      const status = task.status as keyof typeof countByStatus;
+      const index = countByStatus[status];
+      countByStatus[status]++;
 
-      // Criar container para o personagem
+      const pos = this.getTaskPosition(task, index);
       const container = this.add.container(pos.x, pos.y);
 
-      // Emoji como sprite temporário (será substituído por pixel art)
-      const emoji = this.getTaskEmoji(task);
-      const text = this.add
-        .text(0, 0, emoji, {
+      // Emoji do personagem
+      const emoji = this.add
+        .text(0, 0, this.getTaskEmoji(task), {
           fontSize: '32px',
         })
         .setOrigin(0.5);
 
-      // Nome da tarefa (truncado)
+      // Nome da tarefa
       const name = this.add
-        .text(0, 25, this.truncateText(task.title, 12), {
-          fontSize: '10px',
+        .text(0, 24, this.truncateText(task.title, 10), {
+          fontSize: '9px',
           color: '#ffffff',
-          backgroundColor: '#00000088',
-          padding: { x: 4, y: 2 },
+          backgroundColor: '#00000099',
+          padding: { x: 3, y: 1 },
         })
         .setOrigin(0.5);
 
-      container.add([text, name]);
+      // Indicador de prioridade
+      const priorityColor =
+        task.priority === 'high' ? '#ff6b6b' : task.priority === 'medium' ? '#ffd93d' : '#6bcb77';
+      const priority = this.add.circle(
+        -15,
+        -15,
+        5,
+        Phaser.Display.Color.HexStringToColor(priorityColor).color
+      );
 
-      // Interatividade
-      container.setSize(50, 60);
+      container.add([emoji, name, priority]);
+      container.setSize(40, 50);
       container.setInteractive({ useHandCursor: true });
 
+      // Animação idle
+      this.tweens.add({
+        targets: container,
+        y: pos.y - 3,
+        duration: 1000 + Math.random() * 500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+
+      // Hover effect
       container.on('pointerover', () => {
-        text.setScale(1.2);
+        this.tweens.add({
+          targets: container,
+          scaleX: 1.2,
+          scaleY: 1.2,
+          duration: 100,
+        });
       });
 
       container.on('pointerout', () => {
-        text.setScale(1);
+        this.tweens.add({
+          targets: container,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 100,
+        });
       });
 
+      // Click handler
       container.on('pointerdown', () => {
         if (this.onTaskClick) {
           this.onTaskClick(task.id);
         }
+        // Efeito de clique
+        this.tweens.add({
+          targets: container,
+          scaleX: 0.9,
+          scaleY: 0.9,
+          duration: 50,
+          yoyo: true,
+        });
       });
 
       this.characters.set(task.id, container);
@@ -219,51 +359,58 @@ class KanbanGameScene extends Phaser.Scene {
   }
 
   private getTaskPosition(task: TaskData, index: number): { x: number; y: number } {
-    const basePositions: Record<string, { x: number; y: number }> = {
-      todo: { x: 110, y: 250 },
-      'in-progress': { x: 400, y: 250 },
-      blocked: { x: 300, y: 530 },
-      done: { x: 680, y: 250 },
+    if (!this.rooms) return { x: 100, y: 200 };
+
+    const roomMap: Record<string, keyof typeof this.rooms> = {
+      todo: 'todo',
+      'in-progress': 'inProgress',
+      blocked: 'blocked',
+      done: 'done',
     };
 
-    const base = basePositions[task.status] || basePositions.todo;
-    const col = index % 4;
-    const row = Math.floor(index / 4);
+    const room = this.rooms[roomMap[task.status]] || this.rooms.todo;
+    const cols = Math.floor(room.width / 50);
+    const col = index % cols;
+    const row = Math.floor(index / cols);
 
     return {
-      x: base.x + col * 45,
-      y: base.y + row * 50,
+      x: room.x + 35 + col * 50,
+      y: room.y + 120 + row * 55,
     };
   }
 
   private getTaskEmoji(task: TaskData): string {
-    // Emojis baseados no tipo/prioridade
     const typeEmojis: Record<string, string> = {
       code: '👨‍💻',
       design: '🎨',
       research: '🔍',
+      bug: '🐛',
+      doc: '📄',
       default: '🧑‍💼',
     };
-
-    const priorityEmojis: Record<string, string> = {
-      high: '🔴',
-      medium: '🟡',
-      low: '🟢',
-    };
-
-    const typeEmoji = typeEmojis[task.type || 'default'] || typeEmojis.default;
-    return typeEmoji;
+    return typeEmojis[task.type || 'default'] || typeEmojis.default;
   }
 
   private truncateText(text: string, maxLength: number): string {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    return text.length <= maxLength ? text : text.substring(0, maxLength) + '...';
   }
 
-  // Atualizar tarefas dinamicamente
+  private updateStats() {
+    const counts = {
+      todo: this.tasks.filter((t) => t.status === 'todo').length,
+      inProgress: this.tasks.filter((t) => t.status === 'in-progress').length,
+      blocked: this.tasks.filter((t) => t.status === 'blocked').length,
+      done: this.tasks.filter((t) => t.status === 'done').length,
+    };
+    this.statsText.setText(
+      `📊 ${this.tasks.length} tarefas | 🪑 ${counts.todo} | 💻 ${counts.inProgress} | 🚧 ${counts.blocked} | 🎉 ${counts.done}`
+    );
+  }
+
   updateTasks(tasks: TaskData[]) {
     this.tasks = tasks;
     this.createCharacters();
+    this.updateStats();
   }
 }
 
@@ -275,20 +422,32 @@ export function KanbanGame({ tasks, onTaskClick, onTaskMove }: KanbanGameProps) 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Inicializar jogo
   useEffect(() => {
     if (!containerRef.current || gameRef.current) return;
 
     try {
       const game = new Phaser.Game({
-        ...GAME_CONFIG,
+        type: Phaser.AUTO,
         parent: containerRef.current,
+        backgroundColor: '#1a1a2e',
+        scale: {
+          mode: Phaser.Scale.RESIZE,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: '100%',
+          height: '100%',
+        },
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { x: 0, y: 0 },
+            debug: false,
+          },
+        },
         scene: KanbanGameScene,
       });
 
       gameRef.current = game;
 
-      // Aguardar cena estar pronta
       game.events.once('ready', () => {
         sceneRef.current = game.scene.getScene('KanbanGameScene') as KanbanGameScene;
         setIsLoading(false);
@@ -306,17 +465,15 @@ export function KanbanGame({ tasks, onTaskClick, onTaskMove }: KanbanGameProps) 
     };
   }, []);
 
-  // Atualizar tarefas quando mudar
   useEffect(() => {
     if (sceneRef.current && tasks.length > 0) {
       sceneRef.current.updateTasks(tasks);
     }
   }, [tasks]);
 
-  // Callback de clique
   useEffect(() => {
     if (sceneRef.current && onTaskClick) {
-      sceneRef.current.onTaskClick = onTaskClick;
+      sceneRef.current['onTaskClick'] = onTaskClick;
     }
   }, [onTaskClick]);
 
@@ -329,11 +486,11 @@ export function KanbanGame({ tasks, onTaskClick, onTaskMove }: KanbanGameProps) 
   }
 
   return (
-    <div className="relative w-full h-full min-h-[600px] bg-card rounded-lg overflow-hidden">
+    <div className="relative w-full h-full min-h-[500px] bg-card rounded-lg overflow-hidden">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-card z-10">
           <div className="text-center">
-            <div className="animate-spin text-4xl mb-2">🎮</div>
+            <div className="text-4xl mb-2 animate-bounce">🎮</div>
             <p className="text-muted-foreground">Carregando jogo...</p>
           </div>
         </div>
