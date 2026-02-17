@@ -23,13 +23,13 @@ type SelectionUpdate = {
 };
 
 const TOOLBAR_BUTTONS = [
-  { id: 'bold', label: 'Bold', icon: Bold },
-  { id: 'italic', label: 'Italic', icon: Italic },
-  { id: 'code', label: 'Inline code', icon: Code },
+  { id: 'bold', label: 'Negrito', icon: Bold },
+  { id: 'italic', label: 'Itálico', icon: Italic },
+  { id: 'code', label: 'Código inline', icon: Code },
   { id: 'link', label: 'Link', icon: Link2 },
-  { id: 'list', label: 'List', icon: List },
-  { id: 'heading', label: 'Heading', icon: Heading2 },
-  { id: 'codeblock', label: 'Code block', icon: Code2 },
+  { id: 'list', label: 'Lista', icon: List },
+  { id: 'heading', label: 'Título', icon: Heading2 },
+  { id: 'codeblock', label: 'Bloco de código', icon: Code2 },
 ] as const;
 
 export function MarkdownEditor({
@@ -162,12 +162,12 @@ export function MarkdownEditor({
     if ((event.metaKey || event.ctrlKey) && !event.shiftKey) {
       if (event.key.toLowerCase() === 'b') {
         event.preventDefault();
-        wrapSelection('**', '**', 'bold text');
+        wrapSelection('**', '**', 'texto em negrito');
         return;
       }
       if (event.key.toLowerCase() === 'i') {
         event.preventDefault();
-        wrapSelection('_', '_', 'italic text');
+        wrapSelection('_', '_', 'texto em itálico');
         return;
       }
       if (event.key.toLowerCase() === 'k') {
@@ -203,10 +203,10 @@ export function MarkdownEditor({
         </div>
         <TabsList className="ml-auto">
           <TabsTrigger value="edit" className="text-xs">
-            Edit
+            Editar
           </TabsTrigger>
           <TabsTrigger value="preview" className="text-xs">
-            Preview
+            Visualizar
           </TabsTrigger>
         </TabsList>
       </div>

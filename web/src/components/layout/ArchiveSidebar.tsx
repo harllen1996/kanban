@@ -42,10 +42,10 @@ const typeIcons: Record<TaskType, string> = {
 };
 
 const typeLabels: Record<TaskType, string> = {
-  code: 'Code',
-  research: 'Research',
-  content: 'Content',
-  automation: 'Automation',
+  code: 'Código',
+  research: 'Pesquisa',
+  content: 'Conteúdo',
+  automation: 'Automação',
 };
 
 function formatDate(dateString: string): string {
@@ -242,7 +242,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
             <div className="flex items-center justify-between pr-8">
               <SheetTitle className="flex items-center gap-2">
                 <Archive className="h-5 w-5" />
-                Archive
+                Arquivo
                 {archivedTasks && archivedTasks.length > 0 && (
                   <Badge variant="secondary" className="ml-1">
                     {archivedTasks.length}
@@ -264,7 +264,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
             <div className="relative mt-2">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search archived tasks..."
+                placeholder="Buscar tarefas arquivadas..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-8"
@@ -278,7 +278,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="all">Todos os Tipos</SelectItem>
                   {Object.entries(typeLabels).map(([type, label]) => (
                     <SelectItem key={type} value={type}>
                       {typeIcons[type as TaskType]} {label}
@@ -290,10 +290,10 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
               {projects.length > 0 && (
                 <Select value={projectFilter} onValueChange={setProjectFilter}>
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Project" />
+                    <SelectValue placeholder="Projeto" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Projects</SelectItem>
+                    <SelectItem value="all">Todos os Projetos</SelectItem>
                     {projects.map((project) => (
                       <SelectItem key={project.id} value={project.id}>
                         {project.label}
@@ -307,8 +307,8 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
             {/* Results count */}
             {filteredTasks.length > 0 && filteredTasks.length !== archivedTasks?.length && (
               <div className="text-xs text-muted-foreground mt-1">
-                Showing {Math.min(visibleCount, filteredTasks.length)} of {filteredTasks.length}{' '}
-                filtered tasks
+                Mostrando {Math.min(visibleCount, filteredTasks.length)} de {filteredTasks.length}{' '}
+                tarefas filtradas
               </div>
             )}
           </SheetHeader>
@@ -317,13 +317,13 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
             <div className="px-2 py-2">
               {isLoading ? (
                 <div className="text-center text-muted-foreground py-8">
-                  Loading archived tasks...
+                  Carregando tarefas arquivadas...
                 </div>
               ) : filteredTasks.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">
                   {archivedTasks?.length === 0
-                    ? 'No archived tasks yet'
-                    : 'No tasks match your filters'}
+                    ? 'Nenhuma tarefa arquivada ainda'
+                    : 'Nenhuma tarefa corresponde aos seus filtros'}
                 </div>
               ) : (
                 <>
@@ -351,7 +351,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                         className="flex items-center gap-1 mx-auto"
                       >
                         <ChevronDown className="h-4 w-4" />
-                        Load More ({remaining} remaining)
+                        Carregar Mais ({remaining} restantes)
                       </Button>
                     </div>
                   )}
@@ -359,7 +359,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                   {/* Page info */}
                   {!hasMore && filteredTasks.length > PAGE_SIZE && (
                     <div className="py-3 text-center text-xs text-muted-foreground">
-                      All {filteredTasks.length} tasks loaded
+                      Todas as {filteredTasks.length} tarefas carregadas
                     </div>
                   )}
                 </>
