@@ -4,6 +4,9 @@
 
 PROJECT_DIR="/root/projetos-kanban/veritas-kanban"
 LOG_FILE="$PROJECT_DIR/logs/sprint1.log"
+CONTEXT_CHECK_INTERVAL=3600  # 1 hora
+LAST_CONTEXT_CHECK=0
+
 cd "$PROJECT_DIR"
 
 # Função para logar
@@ -43,6 +46,43 @@ check_health() {
     return 0
 }
 
+# Função para limpar memória de contexto
+clean_context_memory() {
+    log "🧹 VERIFICANDO MEMÓRIA DE CONTEXTO..."
+    
+    # Verificar tamanho dos arquivos de memória
+    MEMORY_DIR="$PROJECT_DIR/memory"
+    MAX_SIZE_KB=100  # 100KB máximo por arquivo
+    
+    for file in "$MEMORY_DIR"/*.md; do
+        if [ -f "$file" ]; then
+            SIZE=$(du -k "$file" | cut -f1)
+            if [ "$SIZE" -gt "$MAX_SIZE_KB" ]; then
+                log "⚠️ ARQUIVO GRANDE: $(basename $file) - ${SIZE}KB"
+                log "🧹 LIMPEZA NECESSÁRIA - Remover detalhes de bugs/correções"
+                # Criar versão limpa mantendo apenas o essencial
+                # (Esta parte será feita manualmente pelo sistema AI)
+            else
+                log "✅ $(basename $file): ${SIZE}KB - OK"
+            fi
+        fi
+    done
+    
+    # Verificar logs
+    for logfile in "$PROJECT_DIR/logs"/*.log; do
+        if [ -f "$logfile" ]; then
+            SIZE=$(du -k "$logfile" | cut -f1)
+            if [ "$SIZE" -gt 500 ]; then  # 500KB máximo para logs
+                log "🧹 ROTACIONANDO LOG: $(basename $logfile) - ${SIZE}KB"
+                mv "$logfile" "${logfile}.old"
+                touch "$logfile"
+            fi
+        fi
+    done
+    
+    log "✅ VERIFICAÇÃO DE MEMÓRIA COMPLETA"
+}
+
 # Função para executar tarefas da Sprint 1
 do_sprint1_tasks() {
     log "🚀 INICIANDO TAREFAS SPRINT 1"
@@ -74,8 +114,16 @@ do_sprint1_tasks() {
 log "🤖 INICIANDO TRABALHO CONTÍNUO SPRINT 1"
 
 while true; do
+    CURRENT_TIME=$(date +%s)
+    
     # Verificar saúde
     check_health
+
+    # Verificar se é hora de limpar contexto (a cada 1 hora)
+    if [ $((CURRENT_TIME - LAST_CONTEXT_CHECK)) -ge $CONTEXT_CHECK_INTERVAL ]; then
+        clean_context_memory
+        LAST_CONTEXT_CHECK=$CURRENT_TIME
+    fi
 
     # Executar tarefas da Sprint 1
     do_sprint1_tasks
