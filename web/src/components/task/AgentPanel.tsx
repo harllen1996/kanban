@@ -213,7 +213,7 @@ export function AgentPanel({ task }: AgentPanelProps) {
                   onValueChange={(v) => setSelectedAgent(v as AgentType)}
                 >
                   <SelectTrigger className="w-[180px] h-8">
-                    <SelectValue placeholder="Select agent..." />
+                    <SelectValue placeholder="Selecionar agente..." />
                   </SelectTrigger>
                   <SelectContent>
                     {enabledAgents.map((agent) => (
@@ -222,7 +222,7 @@ export function AgentPanel({ task }: AgentPanelProps) {
                           <Bot className="h-3 w-3" />
                           {agent.name}
                           {agent.type === defaultAgent && (
-                            <span className="text-xs text-muted-foreground">(default)</span>
+                            <span className="text-xs text-muted-foreground">(padrão)</span>
                           )}
                         </div>
                       </SelectItem>
@@ -234,7 +234,7 @@ export function AgentPanel({ task }: AgentPanelProps) {
                   onValueChange={setSelectedModel}
                 >
                   <SelectTrigger className="w-[100px] h-8">
-                    <SelectValue placeholder="Model..." />
+                    <SelectValue placeholder="Modelo..." />
                   </SelectTrigger>
                   <SelectContent>
                     {models.map((model) => (
@@ -254,7 +254,7 @@ export function AgentPanel({ task }: AgentPanelProps) {
                   ) : (
                     <Play className="h-4 w-4 mr-1" />
                   )}
-                  Start
+                  Iniciar
                 </Button>
               </>
             ) : (
@@ -262,18 +262,18 @@ export function AgentPanel({ task }: AgentPanelProps) {
                 <AlertDialogTrigger asChild>
                   <Button size="sm" variant="destructive">
                     <Square className="h-4 w-4 mr-1" />
-                    Stop
+                    Parar
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Stop the agent?</AlertDialogTitle>
+                    <AlertDialogTitle>Parar o agente?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will terminate the running agent. The attempt will be marked as failed.
+                      Isso encerrará o agente em execução. A tentativa será marcada como falha.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleStop}
                       className="bg-destructive text-destructive-foreground"
@@ -398,19 +398,19 @@ export function AgentPanel({ task }: AgentPanelProps) {
             <div className="flex items-center justify-between p-2 border-b bg-card">
               <span className="text-xs text-muted-foreground">Viewing: {viewingAttemptId}</span>
               <Button variant="ghost" size="sm" onClick={() => setViewingAttemptId(null)}>
-                Close
+                Fechar
               </Button>
             </div>
             <div className="h-[200px] overflow-y-auto p-3 font-mono text-xs bg-zinc-950 text-zinc-200">
               {isLoadingLog ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Loading log...
+                  Carregando log...
                 </div>
               ) : attemptLog ? (
                 <pre className="whitespace-pre-wrap">{attemptLog}</pre>
               ) : (
-                <div className="text-muted-foreground">No log available</div>
+                <div className="text-muted-foreground">Nenhum log disponível</div>
               )}
             </div>
           </div>
@@ -421,14 +421,14 @@ export function AgentPanel({ task }: AgentPanelProps) {
           <div className="text-xs text-muted-foreground space-y-1 p-2 rounded-md bg-muted/30">
             <div className="flex items-center gap-2">
               {attemptStatusIcons[task.attempt.status]}
-              <span className="font-medium">Current: {task.attempt.id}</span>
+              <span className="font-medium">Atual: {task.attempt.id}</span>
             </div>
-            <div>Agent: {task.attempt.agent}</div>
+            <div>Agente: {task.attempt.agent}</div>
             {task.attempt.started && (
-              <div>Started: {new Date(task.attempt.started).toLocaleString()}</div>
+              <div>Iniciado: {new Date(task.attempt.started).toLocaleString()}</div>
             )}
             {task.attempt.ended && (
-              <div>Ended: {new Date(task.attempt.ended).toLocaleString()}</div>
+              <div>Finalizado: {new Date(task.attempt.ended).toLocaleString()}</div>
             )}
           </div>
         )}
