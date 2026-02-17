@@ -584,21 +584,36 @@ export function KanbanGame({ tasks, onTaskClick, onTaskMove }: KanbanGameProps) 
 
       gameRef.current = game;
 
-      game.events.once('ready', () => {
+      // Usar evento 'start' da scene em vez de 'ready' do game
+      game.events.on('ready', () => {
         sceneRef.current = game.scene.getScene('KanbanGameScene') as KanbanGameScene;
+        if (sceneRef.current) {
+          sceneRef.current.updateTasks(tasks);
+        }
         setIsLoading(false);
       });
+
+      // Fallback: remover loading após 2 segundos mesmo se o evento não disparar
+      const timeout = setTimeout(() => {
+        console.log('Phaser timeout - forcing load complete');
+        sceneRef.current = game.scene.getScene('KanbanGameScene') as KanbanGameScene;
+        if (sceneRef.current && tasks.length > 0) {
+          sceneRef.current.updateTasks(tasks);
+        }
+        setIsLoading(false);
+      }, 2000);
+
+      return () => {
+        clearTimeout(timeout);
+        if (gameRef.current) {
+          gameRef.current.destroy(true);
+          gameRef.current = null;
+        }
+      };
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao iniciar jogo');
       setIsLoading(false);
     }
-
-    return () => {
-      if (gameRef.current) {
-        gameRef.current.destroy(true);
-        gameRef.current = null;
-      }
-    };
   }, []);
 
   useEffect(() => {
