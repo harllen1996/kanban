@@ -2,14 +2,13 @@
  * GameTestPage - Página de teste para a gamificação
  *
  * Página isolada para testar o jogo sem afetar o Kanban principal.
- * Rota: /game-test
  */
 
 import { useState, useEffect } from 'react';
 import { KanbanGame, TaskData } from '@/game';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, RefreshCw, Plus, Minus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useView } from '@/contexts/ViewContext';
 
 // Dados de exemplo para teste
 const MOCK_TASKS: TaskData[] = [
@@ -23,7 +22,7 @@ const MOCK_TASKS: TaskData[] = [
 ];
 
 export function GameTestPage() {
-  const navigate = useNavigate();
+  const { setView } = useView();
   const [tasks, setTasks] = useState<TaskData[]>(MOCK_TASKS);
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
 
@@ -77,7 +76,7 @@ export function GameTestPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
+          <Button variant="ghost" size="sm" onClick={() => setView('board')}>
             <ArrowLeft className="h-4 w-4 mr-1" />
             Voltar ao Kanban
           </Button>
