@@ -1,11 +1,12 @@
 /**
  * KanbanGame - Componente de gamificação do Veritas Kanban
- * Sprint 2: Animações e movimento entre salas
+ * Sprint 3: Interação completa (clique, drag & drop, zoom)
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Phaser from 'phaser';
 import AnimationManager, { detectStatusChanges } from './AnimationManager';
+import InteractionManager, { detectRoomClick } from './InteractionManager';
 
 // Tipos
 interface KanbanGameProps {
@@ -35,11 +36,13 @@ class KanbanGameScene extends Phaser.Scene {
   private tasks: TaskData[] = [];
   private characters: Map<string, Phaser.GameObjects.Container> = new Map();
   private onTaskClick?: (taskId: string) => void;
+  private onTaskMove?: (taskId: string, newStatus: string) => void;
   private rooms: RoomDimensions | null = null;
   private graphics!: Phaser.GameObjects.Graphics;
   private titleText!: Phaser.GameObjects.Text;
   private statsText!: Phaser.GameObjects.Text;
   private animationManager!: AnimationManager;
+  private interactionManager!: InteractionManager;
   private previousTasks: Map<string, { status: string }> = new Map();
 
   constructor() {
@@ -54,8 +57,15 @@ class KanbanGameScene extends Phaser.Scene {
   create() {
     this.graphics = this.add.graphics();
 
-    // Inicializar gerenciador de animações
+    // Inicializar gerenciadores
     this.animationManager = new AnimationManager(this);
+    this.interactionManager = new InteractionManager(this, {
+      enabled: true,
+      dragDistance: 50,
+      clickThreshold: 10,
+      zoomLevel: 1,
+      zoomSpeed: 0.1,
+    });
 
     // Desenhar escritório inicial
     this.drawOffice();
@@ -67,6 +77,9 @@ class KanbanGameScene extends Phaser.Scene {
       this.animationManager.registerRoom('blocked', this.rooms.blocked);
       this.animationManager.registerRoom('done', this.rooms.done);
     }
+
+    // Configurar handlers de interação
+    this.setupInteractionHandlers();
 
     // Criar personagens
     this.createCharacters();
@@ -99,6 +112,19 @@ class KanbanGameScene extends Phaser.Scene {
 
     // Resize handler
     this.scale.on('resize', this.handleResize, this);
+  }
+
+  private setupInteractionHandlers() {
+    // Handler de clique em sala
+    this.scene.events.on('task-click', (x: number, y: number) => {
+      if (this.rooms) {
+        const room = detectRoomClick(x, y, this.rooms);
+        if (room) {
+          console.log('Sala clicada:', room);
+          // Aqui você pode adicionar lógica para mudar todas as tarefas da sala
+        }
+      }
+    });
   }
 
   private handleResize() {
@@ -372,6 +398,65 @@ class KanbanGameScene extends Phaser.Scene {
           yoyo: true,
         });
       });
+
+      // Drag & Drop handler usando InteractionManager
+      this.interactionManager.registerCharacter(
+        task.id,
+        container,
+        (x, y) => {
+          console.log('Drag start:', task.id, x, y);
+          // Efeito visual de drag
+          this.tweens.add({
+            targets: container,
+            alpha: 0.7,
+            duration: 50,
+          });
+        },
+        (x, y) => {
+          // Mover durante drag
+          container.setPosition(x, y);
+
+          // Detecção de mudança de sala
+          if (this.rooms) {
+            const room = detectRoomClick(x, y, this.rooms);
+            if (room) {
+              const statusMap: Record<string, 'todo' | 'in-progress' | 'blocked' | 'done'> = {
+                todo: 'todo',
+                inProgress: 'in-progress',
+                blocked: 'blocked',
+                done: 'done',
+              };
+
+              const newStatus = statusMap[room];
+              if (newStatus && newStatus !== task.status) {
+                console.log('Mudou de status:', task.id, task.status, '->', newStatus);
+                if (this.onTaskMove) {
+                  this.onTaskMove(task.id, newStatus);
+                }
+              }
+            }
+          }
+        },
+        () => {
+          console.log('Drag end:', task.id);
+          // Efeito de drop
+          this.tweens.add({
+            targets: container,
+            alpha: 1,
+            duration: 100,
+          });
+
+          // Animar volta para posição correta
+          const targetPos = this.getTaskPosition(task, index);
+          this.tweens.add({
+            targets: container,
+            x: targetPos.x,
+            y: targetPos.y,
+            duration: 500,
+            ease: 'Bounce.easeOut',
+          });
+        }
+      );
 
       this.characters.set(task.id, container);
     });
