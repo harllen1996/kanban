@@ -107,7 +107,7 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
     setRestoringIds((prev) => new Set(prev).add(taskId));
     try {
       await restoreTask.mutateAsync(taskId);
-      toast({ title: 'Task restored', description: 'Task moved back to active board' });
+      toast({ title: 'Tarefa restaurada', description: 'Tarefa movida de volta ao quadro ativo' });
       setSelectedIds((prev) => {
         const next = new Set(prev);
         next.delete(taskId);
@@ -115,8 +115,8 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
       });
     } catch (error) {
       toast({
-        title: '❌ Failed to restore task',
-        description: error instanceof Error ? error.message : 'Unknown error',
+        title: '❌ Falha ao restaurar tarefa',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     } finally {
       setRestoringIds((prev) => {
@@ -141,8 +141,8 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
     }
     setSelectedIds(new Set());
     toast({
-      title: 'Tasks restored',
-      description: `${restored} task(s) moved back to active board`,
+      title: 'Tarefas restauradas',
+      description: `${restored} tarefa(s) movida(s) de volta ao quadro ativo`,
     });
   };
 
@@ -153,12 +153,12 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Board
+            Voltar ao Quadro
           </Button>
-          <h1 className="text-2xl font-bold">Archive</h1>
-          <Badge variant="secondary">{filteredTasks.length} tasks</Badge>
+          <h1 className="text-2xl font-bold">Arquivo</h1>
+          <Badge variant="secondary">{filteredTasks.length} tarefas</Badge>
           {archivedTasks.length !== filteredTasks.length && (
-            <span className="text-sm text-muted-foreground">of {archivedTasks.length} total</span>
+            <span className="text-sm text-muted-foreground">de {archivedTasks.length} total</span>
           )}
         </div>
 
@@ -166,10 +166,12 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
           {/* Bulk Actions */}
           {selectedIds.size > 0 && (
             <>
-              <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+              <span className="text-sm text-muted-foreground">
+                {selectedIds.size} selecionada(s)
+              </span>
               <Button size="sm" onClick={handleBulkRestore}>
                 <RotateCcw className="h-4 w-4 mr-2" />
-                Restore to Board
+                Restaurar ao Quadro
               </Button>
             </>
           )}
@@ -179,7 +181,7 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
             className="h-8 w-8"
             onClick={() => refetch()}
             disabled={isRefetching}
-            title="Refresh"
+            title="Atualizar"
           >
             <RefreshCw className={cn('h-4 w-4', isRefetching && 'animate-spin')} />
           </Button>
@@ -191,7 +193,7 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search archived tasks..."
+            placeholder="Buscar tarefas arquivadas..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -200,10 +202,10 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
 
         <Select value={projectFilter} onValueChange={setProjectFilter}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Projects" />
+            <SelectValue placeholder="Todos os Projetos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Projects</SelectItem>
+            <SelectItem value="all">Todos os Projetos</SelectItem>
             {projects.map((project) => (
               <SelectItem key={project.id} value={project.id}>
                 {project.label}
@@ -214,10 +216,10 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
 
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Types" />
+            <SelectValue placeholder="Todos os Tipos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="all">Todos os Tipos</SelectItem>
             {taskTypes.map((type) => (
               <SelectItem key={type.id} value={type.id}>
                 {type.label}
@@ -229,10 +231,10 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
         {archiveSprints.length > 0 && (
           <Select value={sprintFilter} onValueChange={setSprintFilter}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Sprints" />
+              <SelectValue placeholder="Todos os Sprints" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Sprints</SelectItem>
+              <SelectItem value="all">Todos os Sprints</SelectItem>
               {archiveSprints.map((sprint) => (
                 <SelectItem key={sprint.id} value={sprint.id}>
                   {sprint.label}
@@ -252,19 +254,21 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
             id="select-all-archive"
           />
           <label htmlFor="select-all-archive" className="text-sm cursor-pointer">
-            Select all
+            Selecionar tudo
           </label>
         </div>
       )}
 
       {/* Task List */}
       {isLoading ? (
-        <div className="text-center py-12 text-muted-foreground">Loading archived tasks...</div>
+        <div className="text-center py-12 text-muted-foreground">
+          Carregando tarefas arquivadas...
+        </div>
       ) : filteredTasks.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           {search || projectFilter !== 'all' || typeFilter !== 'all'
-            ? 'No tasks match your filters'
-            : 'No archived tasks'}
+            ? 'Nenhuma tarefa corresponde aos seus filtros'
+            : 'Nenhuma tarefa arquivada'}
         </div>
       ) : (
         <div className="space-y-3">
@@ -326,7 +330,7 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
                             restoringIds.has(task.id) && 'animate-spin'
                           )}
                         />
-                        Restore
+                        Restaurar
                       </Button>
                     </div>
                   </div>
@@ -360,7 +364,7 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
                     <div className="mt-4 pt-4 border-t space-y-3">
                       {task.description && (
                         <div>
-                          <h4 className="text-sm font-medium mb-1">Description</h4>
+                          <h4 className="text-sm font-medium mb-1">Descrição</h4>
                           <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                             {task.description}
                           </p>
@@ -368,21 +372,21 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
                       )}
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <span className="text-muted-foreground">Created:</span>{' '}
+                          <span className="text-muted-foreground">Criado:</span>{' '}
                           {new Date(task.created).toLocaleDateString()}
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Archived:</span>{' '}
+                          <span className="text-muted-foreground">Arquivado:</span>{' '}
                           {new Date(task.updated).toLocaleDateString()}
                         </div>
                         {task.agent && (
                           <div>
-                            <span className="text-muted-foreground">Agent:</span> {task.agent}
+                            <span className="text-muted-foreground">Agente:</span> {task.agent}
                           </div>
                         )}
                         {task.status && (
                           <div>
-                            <span className="text-muted-foreground">Final status:</span>{' '}
+                            <span className="text-muted-foreground">Status final:</span>{' '}
                             {task.status}
                           </div>
                         )}
@@ -390,7 +394,7 @@ export function ArchivePage({ onBack }: ArchivePageProps) {
                       {task.comments && task.comments.length > 0 && (
                         <div>
                           <h4 className="text-sm font-medium mb-1">
-                            Comments ({task.comments.length})
+                            Comentários ({task.comments.length})
                           </h4>
                           {task.comments.slice(-3).map((comment, i) => (
                             <div
