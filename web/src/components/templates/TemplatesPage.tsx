@@ -97,8 +97,8 @@ export function TemplatesPage({ onBack }: TemplatesPageProps) {
       setTemplateToDelete(null);
     } catch (err) {
       toast({
-        title: 'Error',
-        description: 'Failed to delete template',
+        title: 'Erro',
+        description: 'Falha ao excluir template',
         variant: 'destructive',
       });
     }
@@ -119,15 +119,15 @@ export function TemplatesPage({ onBack }: TemplatesPageProps) {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Task Templates</h1>
+              <h1 className="text-2xl font-bold">Templates de Tarefas</h1>
               <p className="text-sm text-muted-foreground">
-                Create, manage, and organize task templates for your projects
+                Criar, gerenciar e organizar templates de tarefas para seus projetos
               </p>
             </div>
           </div>
           <Button onClick={handleCreateNew} size="lg">
             <Plus className="h-4 w-4 mr-2" />
-            New Template
+            Novo Template
           </Button>
         </div>
       </div>
@@ -139,7 +139,7 @@ export function TemplatesPage({ onBack }: TemplatesPageProps) {
           {/* Filters */}
           <div className="flex gap-3">
             <Input
-              placeholder="Search templates..."
+              placeholder="Buscar templates..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1"
@@ -149,7 +149,7 @@ export function TemplatesPage({ onBack }: TemplatesPageProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">Todas as Categorias</SelectItem>
                 {Object.entries(TEMPLATE_CATEGORIES).map(([key, { label }]) => (
                   <SelectItem key={key} value={key}>
                     {label}
@@ -164,15 +164,15 @@ export function TemplatesPage({ onBack }: TemplatesPageProps) {
             <div className="p-4">
               {isLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <span className="text-muted-foreground">Loading templates…</span>
+                  <span className="text-muted-foreground">Carregando templates…</span>
                 </div>
               ) : filteredTemplates.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <FileText className="h-12 w-12 text-muted-foreground/50 mb-3" />
                   <p className="text-muted-foreground">
                     {templates.length === 0
-                      ? 'No templates yet. Create your first template to get started.'
-                      : 'No templates match your search.'}
+                      ? 'Nenhum template ainda. Crie seu primeiro template para começar.'
+                      : 'Nenhum template corresponde à sua busca.'}
                   </p>
                 </div>
               ) : (
@@ -304,19 +304,19 @@ export function TemplatesPage({ onBack }: TemplatesPageProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Template?</AlertDialogTitle>
+            <AlertDialogTitle>Excluir Template?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{templateToDelete?.name}"? This action cannot be
-              undone.
+              Tem certeza que deseja excluir "{templateToDelete?.name}"? Esta ação não pode ser
+              desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
