@@ -1,15 +1,16 @@
 /**
- * GameTestPage - Página de teste para a gamificação
- * Sprint 1: MVP Visual com dados de teste
+ * GameTestPage - Página de gamificação integrada com tarefas reais
+ * Sprint 1: MVP Visual com integração real
  */
 
 import { useState, useEffect } from 'react';
 import { KanbanGame, TaskData } from '@/game';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, RefreshCw, Plus, Minus, Move } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Plus, Minus, Move, Database, Layers } from 'lucide-react';
 import { useView } from '@/contexts/ViewContext';
+import { useToast } from '@/hooks/useToast';
 
-// Dados de exemplo mais ricos
+// Dados de exemplo para fallback
 const MOCK_TASKS: TaskData[] = [
   { id: '1', title: 'Implementar login', status: 'todo', priority: 'high', type: 'code' },
   { id: '2', title: 'Design da homepage', status: 'todo', priority: 'medium', type: 'design' },
@@ -29,11 +30,95 @@ const MOCK_TASKS: TaskData[] = [
   { id: '10', title: 'Logo da marca', status: 'done', priority: 'low', type: 'design' },
 ];
 
+// Mapear status do Kanban para status do jogo
+const statusMap: Record<string, TaskData['status']> = {
+  todo: 'todo',
+  'in-progress': 'in-progress',
+  blocked: 'blocked',
+  done: 'done',
+  // Aliases
+  backlog: 'todo',
+  review: 'in-progress',
+  testing: 'in-progress',
+};
+
+// Mapear prioridade
+const priorityMap: Record<string, TaskData['priority']> = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  // Aliases
+  p1: 'high',
+  p2: 'medium',
+  p3: 'low',
+};
+
+// Mapear tipo de tarefa
+const typeMap: Record<string, string> = {
+  code: 'code',
+  bug: 'bug',
+  feature: 'code',
+  docs: 'doc',
+  doc: 'doc',
+  design: 'design',
+  research: 'research',
+  task: 'code',
+};
+
 export function GameTestPage() {
   const { setView } = useView();
+  const toast = useToast();
   const [tasks, setTasks] = useState<TaskData[]>(MOCK_TASKS);
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const [autoMove, setAutoMove] = useState(false);
+  const [useRealData, setUseRealData] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Carregar tarefas reais da API
+  const loadRealTasks = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/tasks');
+      if (!response.ok) throw new Error('Falha ao carregar tarefas');
+
+      const rawTasks = await response.json();
+
+      // Converter tarefas reais para formato do jogo
+      const gameTasks: TaskData[] = rawTasks.slice(0, 20).map((task: any) => ({
+        id: task.id,
+        title: task.title || task.name || 'Sem título',
+        status: statusMap[task.status] || 'todo',
+        priority: priorityMap[task.priority] || 'medium',
+        type: typeMap[task.type] || 'code',
+      }));
+
+      setTasks(gameTasks.length > 0 ? gameTasks : MOCK_TASKS);
+
+      if (gameTasks.length > 0) {
+        toast({
+          title: 'Tarefas carregadas',
+          description: `${gameTasks.length} tarefas carregadas do Kanban`,
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar tarefas:', error);
+      toast({
+        title: 'Usando dados de exemplo',
+        description: 'Não foi possível carregar tarefas reais',
+        variant: 'default',
+      });
+      setTasks(MOCK_TASKS);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Carregar tarefas ao montar
+  useEffect(() => {
+    if (useRealData) {
+      loadRealTasks();
+    }
+  }, [useRealData]);
 
   // Auto-mover tarefas para demonstrar animação
   useEffect(() => {
@@ -83,8 +168,21 @@ export function GameTestPage() {
   };
 
   const handleReset = () => {
-    setTasks(MOCK_TASKS);
+    if (useRealData) {
+      loadRealTasks();
+    } else {
+      setTasks(MOCK_TASKS);
+    }
     setSelectedTask(null);
+  };
+
+  const handleToggleDataSource = () => {
+    setUseRealData(!useRealData);
+    if (!useRealData) {
+      loadRealTasks();
+    } else {
+      setTasks(MOCK_TASKS);
+    }
   };
 
   const selectedTaskData = tasks.find((t) => t.id === selectedTask);
@@ -109,6 +207,18 @@ export function GameTestPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button
+            variant={useRealData ? 'default' : 'outline'}
+            size="sm"
+            onClick={handleToggleDataSource}
+          >
+            {useRealData ? (
+              <Database className="h-4 w-4 mr-1" />
+            ) : (
+              <Layers className="h-4 w-4 mr-1" />
+            )}
+            {useRealData ? 'Reais' : 'Demo'}
+          </Button>
+          <Button
             variant={autoMove ? 'default' : 'outline'}
             size="sm"
             onClick={() => setAutoMove(!autoMove)}
@@ -124,9 +234,9 @@ export function GameTestPage() {
             <Plus className="h-4 w-4 mr-1" />
             Adicionar
           </Button>
-          <Button variant="outline" size="sm" onClick={handleReset}>
-            <RefreshCw className="h-4 w-4 mr-1" />
-            Resetar
+          <Button variant="outline" size="sm" onClick={handleReset} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+            {isLoading ? 'Carregando...' : 'Atualizar'}
           </Button>
         </div>
       </div>
@@ -193,11 +303,16 @@ export function GameTestPage() {
       <div className="mt-4 p-4 bg-muted/50 rounded-lg text-sm">
         <p className="font-semibold mb-2">📌 Instruções:</p>
         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+          <li>
+            <strong>{useRealData ? 'Tarefas Reais' : 'Dados Demo'}</strong> - Botão "Reais/Demo"
+            alterna entre tarefas do Kanban e dados de exemplo
+          </li>
           <li>Clique nos personagens para ver detalhes da tarefa</li>
           <li>Use "Auto-mover" para ver animações automáticas</li>
           <li>Adicione/remova tarefas para testar o layout</li>
           <li>Personagens se movem automaticamente quando o status muda</li>
           <li>Cada cor indica prioridade: 🔴 alta, 🟡 média, 🟢 baixa</li>
+          <li>Use "Atualizar" para recarregar tarefas reais do servidor</li>
         </ul>
       </div>
     </div>
