@@ -49,21 +49,21 @@ const activityIcons: Record<string, string> = {
 };
 
 const activityLabels: Record<string, string> = {
-  task_created: 'Created',
-  task_updated: 'Updated',
-  status_changed: 'Status changed',
-  agent_started: 'Agent started',
-  agent_stopped: 'Agent stopped',
-  agent_completed: 'Agent completed',
-  task_archived: 'Archived',
-  task_deleted: 'Deleted',
-  worktree_created: 'Worktree created',
-  worktree_merged: 'Merged',
-  project_archived: 'Project archived',
-  sprint_archived: 'Sprint archived',
-  template_applied: 'Template applied',
-  comment_added: 'Comment added',
-  comment_deleted: 'Comment deleted',
+  task_created: 'Criada',
+  task_updated: 'Atualizada',
+  status_changed: 'Status alterado',
+  agent_started: 'Agente iniciado',
+  agent_stopped: 'Agente parado',
+  agent_completed: 'Agente concluído',
+  task_archived: 'Arquivada',
+  task_deleted: 'Excluída',
+  worktree_created: 'Worktree criado',
+  worktree_merged: 'Mesclado',
+  project_archived: 'Projeto arquivado',
+  sprint_archived: 'Sprint arquivado',
+  template_applied: 'Modelo aplicado',
+  comment_added: 'Comentário adicionado',
+  comment_deleted: 'Comentário excluído',
 };
 
 function formatTimestamp(timestamp: string): string {
@@ -74,10 +74,10 @@ function formatTimestamp(timestamp: string): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffMins < 1) return 'Agora mesmo';
+  if (diffMins < 60) return `${diffMins}min atrás`;
+  if (diffHours < 24) return `${diffHours}h atrás`;
+  if (diffDays < 7) return `${diffDays}d atrás`;
 
   return date.toLocaleDateString();
 }
@@ -139,7 +139,7 @@ function DailySummaryCard() {
 
   return (
     <div className="px-4 py-3 border-b bg-muted/30">
-      <div className="text-xs font-medium text-muted-foreground mb-2">Today's Summary</div>
+      <div className="text-xs font-medium text-muted-foreground mb-2">Resumo de Hoje</div>
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5">
           <Zap className="h-4 w-4 text-green-500" />
@@ -147,7 +147,7 @@ function DailySummaryCard() {
             <div className="text-sm font-bold text-green-500">
               {formatDurationMs(summary.activeMs)}
             </div>
-            <div className="text-xs text-muted-foreground">Active</div>
+            <div className="text-xs text-muted-foreground">Ativo</div>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
@@ -156,13 +156,13 @@ function DailySummaryCard() {
             <div className="text-sm font-bold text-muted-foreground">
               {formatDurationMs(summary.idleMs)}
             </div>
-            <div className="text-xs text-muted-foreground">Idle</div>
+            <div className="text-xs text-muted-foreground">Inativo</div>
           </div>
         </div>
         <div className="flex items-center gap-1.5 ml-auto">
           <div className="text-right">
             <div className="text-sm font-bold">{activePercent}%</div>
-            <div className="text-xs text-muted-foreground">Utilization</div>
+            <div className="text-xs text-muted-foreground">Utilização</div>
           </div>
         </div>
       </div>
@@ -257,7 +257,7 @@ export function ActivitySidebar({ open, onOpenChange }: ActivitySidebarProps) {
           <div className="flex items-center justify-between pr-8">
             <SheetTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5" />
-              Activity Log
+              Registro de Atividades
             </SheetTitle>
             <div className="flex items-center gap-1">
               <Button
@@ -287,8 +287,8 @@ export function ActivitySidebar({ open, onOpenChange }: ActivitySidebarProps) {
 
         <Tabs value={tab} onValueChange={setTab} className="flex flex-col h-[calc(100vh-200px)]">
           <TabsList className="mx-4 mt-2 grid w-[calc(100%-32px)] grid-cols-2">
-            <TabsTrigger value="tasks">Task Activity</TabsTrigger>
-            <TabsTrigger value="status">Status History</TabsTrigger>
+            <TabsTrigger value="tasks">Atividades de Tarefas</TabsTrigger>
+            <TabsTrigger value="status">Histórico de Status</TabsTrigger>
           </TabsList>
 
           <TabsContent value="tasks" className="flex-1 mt-0">
@@ -296,10 +296,10 @@ export function ActivitySidebar({ open, onOpenChange }: ActivitySidebarProps) {
               <div className="px-4 py-2">
                 <Select value={filter} onValueChange={setFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Filter activities" />
+                    <SelectValue placeholder="Filtrar atividades" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Activities</SelectItem>
+                    <SelectItem value="all">Todas as Atividades</SelectItem>
                     {activityTypes.map((type) => (
                       <SelectItem key={type} value={type}>
                         {activityIcons[type]} {activityLabels[type]}
@@ -313,10 +313,12 @@ export function ActivitySidebar({ open, onOpenChange }: ActivitySidebarProps) {
               <div className="px-2 py-2">
                 {isLoading ? (
                   <div className="text-center text-muted-foreground py-8">
-                    Loading activities...
+                    Carregando atividades...
                   </div>
                 ) : filteredActivities.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-8">No activities yet</div>
+                  <div className="text-center text-muted-foreground py-8">
+                    Nenhuma atividade ainda
+                  </div>
                 ) : (
                   <div className="divide-y divide-border">
                     {filteredActivities.map((activity) => (
