@@ -1,12 +1,13 @@
 /**
  * KanbanGame - Componente de gamificação do Veritas Kanban
- * Sprint 3: Interação completa (clique, drag & drop, zoom)
+ * Sprint 4: Pixel Art profissional
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Phaser from 'phaser';
 import AnimationManager, { detectStatusChanges } from './AnimationManager';
 import InteractionManager, { detectRoomClick } from './InteractionManager';
+import SpriteManager, { SpriteType } from './SpriteManager';
 
 // Tipos
 interface KanbanGameProps {
@@ -43,6 +44,7 @@ class KanbanGameScene extends Phaser.Scene {
   private statsText!: Phaser.GameObjects.Text;
   private animationManager!: AnimationManager;
   private interactionManager!: InteractionManager;
+  private spriteManager!: SpriteManager;
   private previousTasks: Map<string, { status: string }> = new Map();
 
   constructor() {
@@ -66,6 +68,7 @@ class KanbanGameScene extends Phaser.Scene {
       zoomLevel: 1,
       zoomSpeed: 0.1,
     });
+    this.spriteManager = new SpriteManager(this);
 
     // Desenhar escritório inicial
     this.drawOffice();
@@ -324,16 +327,13 @@ class KanbanGameScene extends Phaser.Scene {
       const pos = this.getTaskPosition(task, index);
       const container = this.add.container(pos.x, pos.y);
 
-      // Emoji do personagem
-      const emoji = this.add
-        .text(0, 0, this.getTaskEmoji(task), {
-          fontSize: '32px',
-        })
-        .setOrigin(0.5);
+      // Sprite pixel art baseado no status
+      const spriteType = this.getTaskSpriteType(task);
+      const sprite = this.spriteManager.generatePixelSprite(spriteType);
 
       // Nome da tarefa
       const name = this.add
-        .text(0, 24, this.truncateText(task.title, 10), {
+        .text(0, 35, this.truncateText(task.title, 10), {
           fontSize: '9px',
           color: '#ffffff',
           backgroundColor: '#00000099',
