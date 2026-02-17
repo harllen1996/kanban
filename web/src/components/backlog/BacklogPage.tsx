@@ -108,32 +108,32 @@ export function BacklogPage({ onBack }: BacklogPageProps) {
       const result = await bulkPromote.mutateAsync(Array.from(selectedIds));
       setSelectedIds(new Set());
       toast({
-        title: 'Tasks promoted',
-        description: `${result.promoted.length} task(s) moved to active board${result.failed.length > 0 ? `, ${result.failed.length} failed` : ''}`,
+        title: 'Tarefas promovidas',
+        description: `${result.promoted.length} tarefa(s) movida(s) para o quadro ativo${result.failed.length > 0 ? `, ${result.failed.length} falharam` : ''}`,
       });
     } catch (error) {
       toast({
-        title: '❌ Failed to promote tasks',
-        description: error instanceof Error ? error.message : 'Unknown error',
+        title: '❌ Falha ao promover tarefas',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   };
 
   const handleDelete = async (taskId: string) => {
-    if (!confirm('Are you sure you want to delete this task from the backlog?')) {
+    if (!confirm('Tem certeza que deseja excluir esta tarefa do backlog?')) {
       return;
     }
 
     try {
       await deleteTask.mutateAsync(taskId);
       toast({
-        title: 'Task deleted',
-        description: 'Task removed from backlog',
+        title: 'Tarefa excluída',
+        description: 'Tarefa removida do backlog',
       });
     } catch (error) {
       toast({
-        title: '❌ Failed to delete task',
-        description: error instanceof Error ? error.message : 'Unknown error',
+        title: '❌ Falha ao excluir tarefa',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   };
@@ -151,19 +151,19 @@ export function BacklogPage({ onBack }: BacklogPageProps) {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Board
+            Voltar ao Quadro
           </Button>
           <h1 className="text-2xl font-bold">Backlog</h1>
-          <Badge variant="secondary">{filteredTasks.length} tasks</Badge>
+          <Badge variant="secondary">{filteredTasks.length} tarefas</Badge>
         </div>
 
         {/* Bulk Actions */}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+            <span className="text-sm text-muted-foreground">{selectedIds.size} selecionada(s)</span>
             <Button size="sm" onClick={handleBulkPromote} disabled={bulkPromote.isPending}>
               <ArrowUp className="h-4 w-4 mr-2" />
-              Promote to Board
+              Promover ao Quadro
             </Button>
           </div>
         )}
@@ -174,7 +174,7 @@ export function BacklogPage({ onBack }: BacklogPageProps) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search tasks..."
+            placeholder="Buscar tarefas..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -197,10 +197,10 @@ export function BacklogPage({ onBack }: BacklogPageProps) {
 
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Types" />
+            <SelectValue placeholder="Todos os Tipos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="all">Todos os Tipos</SelectItem>
             {taskTypes.map((type) => (
               <SelectItem key={type.id} value={type.id}>
                 {type.label}
@@ -217,7 +217,7 @@ export function BacklogPage({ onBack }: BacklogPageProps) {
               id="select-all"
             />
             <label htmlFor="select-all" className="text-sm cursor-pointer whitespace-nowrap">
-              Select all
+              Selecionar tudo
             </label>
           </div>
         )}
@@ -225,12 +225,14 @@ export function BacklogPage({ onBack }: BacklogPageProps) {
 
       {/* Task List */}
       {isLoading ? (
-        <div className="text-center py-12 text-muted-foreground">Loading backlog tasks...</div>
+        <div className="text-center py-12 text-muted-foreground">
+          Carregando tarefas do backlog...
+        </div>
       ) : filteredTasks.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           {search || projectFilter !== 'all' || typeFilter !== 'all'
-            ? 'No tasks match your filters'
-            : 'No tasks in backlog'}
+            ? 'Nenhuma tarefa corresponde aos seus filtros'
+            : 'Nenhuma tarefa no backlog'}
         </div>
       ) : (
         <div className="space-y-3">
@@ -322,7 +324,7 @@ function BacklogTaskCard({
                 }}
               >
                 <ArrowUp className="h-3 w-3 mr-1" />
-                Promote
+                Promover
               </Button>
               <Button
                 size="sm"
