@@ -8,7 +8,8 @@ export type AppView =
   | 'templates'
   | 'workflows'
   | 'game-test'
-  | 'gather';
+  | 'gather'
+  | 'gather-office';
 
 interface ViewContextValue {
   view: AppView;

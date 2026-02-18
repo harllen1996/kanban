@@ -17,6 +17,7 @@ import { LiveAnnouncerProvider } from './components/shared/LiveAnnouncer';
 import { FloatingChat } from './components/chat/FloatingChat';
 import { GameTestPage } from './game';
 import { GatherTestPage } from './game';
+import { GatherOfficePage } from './game';
 
 // Lazy-load ActivityFeed and BacklogPage to keep initial bundle small
 const ActivityFeed = lazy(() =>
@@ -60,6 +61,8 @@ function MainContent() {
       setView('game-test');
     } else if (path === '/gather' && view !== 'gather') {
       setView('gather');
+    } else if (path === '/gather-office' && view !== 'gather-office') {
+      setView('gather-office');
     } else if (path === '/' && view !== 'board') {
       setView('board');
     } else if (path === '/activity' && view !== 'activity') {
@@ -154,6 +157,10 @@ function MainContent() {
 
   if (view === 'gather') {
     return <GatherTestPage />;
+  }
+
+  if (view === 'gather-office') {
+    return <GatherOfficePage />;
   }
 
   return <KanbanBoard />;
