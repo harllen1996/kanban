@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { KanbanBoard } from './components/board/KanbanBoard';
 import { Header } from './components/layout/Header';
 import { Toaster } from './components/ui/toaster';
@@ -51,6 +51,26 @@ const WorkflowsPage = lazy(() =>
 /** Renders the current view (board, activity feed, or backlog). */
 function MainContent() {
   const { view, setView, navigateToTask } = useView();
+
+  // Detect URL path and set view accordingly
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/game' && view !== 'game-test') {
+      setView('game-test');
+    } else if (path === '/' && view !== 'board') {
+      setView('board');
+    } else if (path === '/activity' && view !== 'activity') {
+      setView('activity');
+    } else if (path === '/backlog' && view !== 'backlog') {
+      setView('backlog');
+    } else if (path === '/archive' && view !== 'archive') {
+      setView('archive');
+    } else if (path === '/templates' && view !== 'templates') {
+      setView('templates');
+    } else if (path === '/workflows' && view !== 'workflows') {
+      setView('workflows');
+    }
+  }, [view, setView]);
 
   if (view === 'activity') {
     return (
