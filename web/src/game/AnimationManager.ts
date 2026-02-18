@@ -4,15 +4,16 @@
  */
 
 // Tipos para o sistema de movimento
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }
 
-interface MovementPath {
-  start: Position;
-  end: Position;
-  waypoints: Position[];
+// Status change type
+export interface StatusChange {
+  taskId: string;
+  fromStatus: string;
+  toStatus: string;
 }
 
 // Classe de gerenciamento de animações
@@ -74,10 +75,21 @@ export class AnimationManager {
     }
 
     // Criar tween sequencial
-    this.scene.tweens.timeline({
-      tweens: tweens,
-      onComplete: onComplete,
-    });
+    if (tweens.length > 0) {
+      this.scene.tweens.add({
+        ...tweens[0],
+        onComplete: () => {
+          if (tweens.length > 1) {
+            this.scene.tweens.add({
+              ...tweens[1],
+              onComplete: onComplete,
+            });
+          } else {
+            onComplete?.();
+          }
+        },
+      });
+    }
 
     // Adicionar efeito de movimento
     this.addMovementEffect(gameObject);

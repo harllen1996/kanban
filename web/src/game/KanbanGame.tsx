@@ -3,11 +3,10 @@
  * Sprint 4: Pixel Art profissional
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Phaser from 'phaser';
 import AnimationManager, { detectStatusChanges } from './AnimationManager';
 import InteractionManager, { detectRoomClick } from './InteractionManager';
-import SpriteManager, { SpriteType } from './SpriteManager';
 
 // Tipos
 interface KanbanGameProps {
@@ -44,7 +43,6 @@ class KanbanGameScene extends Phaser.Scene {
   private statsText!: Phaser.GameObjects.Text;
   private animationManager!: AnimationManager;
   private interactionManager!: InteractionManager;
-  private spriteManager!: SpriteManager;
   private previousTasks: Map<string, { status: string }> = new Map();
 
   constructor() {
@@ -68,7 +66,6 @@ class KanbanGameScene extends Phaser.Scene {
       zoomLevel: 1,
       zoomSpeed: 0.1,
     });
-    this.spriteManager = new SpriteManager(this);
 
     // Desenhar escritório inicial
     this.drawOffice();
@@ -119,15 +116,7 @@ class KanbanGameScene extends Phaser.Scene {
 
   private setupInteractionHandlers() {
     // Handler de clique em sala
-    this.scene.events.on('task-click', (x: number, y: number) => {
-      if (this.rooms) {
-        const room = detectRoomClick(x, y, this.rooms);
-        if (room) {
-          console.log('Sala clicada:', room);
-          // Aqui você pode adicionar lógica para mudar todas as tarefas da sala
-        }
-      }
-    });
+    this.scale.on('resize', this.handleResize, this);
   }
 
   private handleResize() {
@@ -144,10 +133,7 @@ class KanbanGameScene extends Phaser.Scene {
 
     graphics.clear();
 
-    // Fundo gradiente
-    const gradient = graphics.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, 0x1a1a2e);
-    gradient.addColorStop(1, 0x16213e);
+    // Fundo sólido
     graphics.fillStyle(0x1a1a2e, 1);
     graphics.fillRect(0, 0, width, height);
 
@@ -274,7 +260,7 @@ class KanbanGameScene extends Phaser.Scene {
 
   private drawRoomDecorations(
     dim: { x: number; y: number; width: number; height: number },
-    bgColor: number,
+    _bgColor: number,
     borderColor: number
   ) {
     const graphics = this.graphics;
@@ -327,9 +313,9 @@ class KanbanGameScene extends Phaser.Scene {
       const pos = this.getTaskPosition(task, index);
       const container = this.add.container(pos.x, pos.y);
 
-      // Sprite pixel art baseado no status
-      const spriteType = this.getTaskSpriteType(task);
-      const sprite = this.spriteManager.generatePixelSprite(spriteType);
+      // Emoji baseado no tipo de tarefa
+      const emojiStr = this.getTaskEmoji(task);
+      const emoji = this.add.text(0, 0, emojiStr, { fontSize: '24px' }).setOrigin(0.5);
 
       // Nome da tarefa
       const name = this.add
@@ -551,7 +537,7 @@ class KanbanGameScene extends Phaser.Scene {
 }
 
 // Componente React
-export function KanbanGame({ tasks, onTaskClick, onTaskMove }: KanbanGameProps) {
+export function KanbanGame({ tasks, onTaskClick, onTaskMove: _onTaskMove }: KanbanGameProps) {
   const gameRef = useRef<Phaser.Game | null>(null);
   const sceneRef = useRef<KanbanGameScene | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);

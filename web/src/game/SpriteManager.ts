@@ -45,7 +45,6 @@ export const SPRITE_CONFIGS: Record<SpriteType, SpriteConfig> = {
 // Classe para gerenciar sprites pixel art
 export class SpriteManager {
   private scene: Phaser.Scene;
-  private loadedSprites: Map<SpriteType, Phaser.GameObjects.Sprite> = new Map();
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -99,10 +98,7 @@ export class SpriteManager {
   }
 
   // Personagem idle (parado)
-  private drawCharacterIdle(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
-    const scale = config.scale;
-    graphics.scale(scale, scale);
-
+  private drawCharacterIdle(graphics: Phaser.GameObjects.Graphics, __config: SpriteConfig) {
     // Corpo
     graphics.fillStyle(0x4a90d9, 1);
     graphics.fillRect(10, 10, 12, 14);
@@ -128,10 +124,7 @@ export class SpriteManager {
   }
 
   // Personagem andando
-  private drawCharacterWalk(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
-    const scale = config.scale;
-    graphics.scale(scale, scale);
-
+  private drawCharacterWalk(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Similar ao idle, mas com pernas em posição de caminhada
     graphics.fillStyle(0x4a90d9, 1);
     graphics.fillRect(10, 10, 12, 14);
@@ -154,10 +147,7 @@ export class SpriteManager {
   }
 
   // Personagem trabalhando
-  private drawCharacterWork(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
-    const scale = config.scale;
-    graphics.scale(scale, scale);
-
+  private drawCharacterWork(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Corpo inclinado
     graphics.fillStyle(0x4a90d9, 1);
     graphics.fillRect(8, 12, 14, 12);
@@ -180,10 +170,7 @@ export class SpriteManager {
   }
 
   // Personagem comemorando
-  private drawCharacterCelebrate(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
-    const scale = config.scale;
-    graphics.scale(scale, scale);
-
+  private drawCharacterCelebrate(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     graphics.fillStyle(0x27ae60, 1);
     graphics.fillRect(10, 10, 12, 14);
 
@@ -210,10 +197,7 @@ export class SpriteManager {
   }
 
   // Personagem bloqueado
-  private drawCharacterBlocked(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
-    const scale = config.scale;
-    graphics.scale(scale, scale);
-
+  private drawCharacterBlocked(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     graphics.fillStyle(0x95a5a6, 1);
     graphics.fillRect(10, 10, 12, 14);
 
@@ -241,7 +225,7 @@ export class SpriteManager {
   }
 
   // Mesa
-  private drawDesk(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
+  private drawDesk(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Tampo da mesa
     graphics.fillStyle(0x8b4513, 1);
     graphics.fillRect(0, 10, 48, 6);
@@ -263,7 +247,7 @@ export class SpriteManager {
   }
 
   // Cadeira
-  private drawChair(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
+  private drawChair(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Assento
     graphics.fillStyle(0x2c3e50, 1);
     graphics.fillRect(4, 14, 16, 6);
@@ -279,7 +263,7 @@ export class SpriteManager {
   }
 
   // Computador
-  private drawComputer(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
+  private drawComputer(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Monitor
     graphics.fillStyle(0x2c3e50, 1);
     graphics.fillRect(4, 2, 24, 16);
@@ -295,7 +279,7 @@ export class SpriteManager {
   }
 
   // Planta
-  private drawPlant(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
+  private drawPlant(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Vaso
     graphics.fillStyle(0xd35400, 1);
     graphics.fillRect(4, 14, 8, 10);
@@ -312,7 +296,7 @@ export class SpriteManager {
   }
 
   // Café
-  private drawCoffee(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
+  private drawCoffee(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Xícara
     graphics.fillStyle(0xecf0f1, 1);
     graphics.fillRect(2, 6, 8, 8);
@@ -340,7 +324,7 @@ export class SpriteManager {
   }
 
   // Cone
-  private drawCone(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
+  private drawCone(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Base
     graphics.fillStyle(0xff6b00, 1);
     graphics.fillRect(2, 20, 12, 4);
@@ -358,7 +342,7 @@ export class SpriteManager {
   }
 
   // Barreira
-  private drawBarrier(graphics: Phaser.GameObjects.Graphics, config: SpriteConfig) {
+  private drawBarrier(graphics: Phaser.GameObjects.Graphics, _config: SpriteConfig) {
     // Postes
     graphics.fillStyle(0xe74c3c, 1);
     graphics.fillRect(2, 0, 4, 32);

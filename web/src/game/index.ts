@@ -1,14 +1,8 @@
-/**
- * Game Module - Gamificação do Veritas Kanban
- *
- * Este módulo contém toda a lógica de gamificação isolada do código principal.
- * Sprint 4: Sprites Pixel Art
- */
-
-export { KanbanGame } from './KanbanGame';
-export type { TaskData } from './KanbanGame';
-export { GameTestPage } from './GameTestPage';
+// Game Module Exports
+export { KanbanGame, type TaskData } from './KanbanGame';
+export { InteractionManager, detectRoomClick, type InteractionConfig } from './InteractionManager';
 export { AnimationManager, detectStatusChanges } from './AnimationManager';
-export { InteractionManager, detectRoomClick } from './InteractionManager';
-export { SpriteManager } from './SpriteManager';
-export type { SpriteType, SpriteConfig } from './SpriteManager';
+export type { Position } from './AnimationManager';
+export type { StatusChange } from './AnimationManager';
+export { SpriteManager, type SpriteType } from './SpriteManager';
+export { GameTestPage } from './GameTestPage';

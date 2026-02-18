@@ -67,7 +67,7 @@ const typeMap: Record<string, string> = {
 
 export function GameTestPage() {
   const { setView } = useView();
-  const toast = useToast();
+  const { toast } = useToast();
   const [tasks, setTasks] = useState<TaskData[]>(MOCK_TASKS);
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const [autoMove, setAutoMove] = useState(false);

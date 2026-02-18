@@ -1,170 +1,183 @@
-# 🧹 Gestão de Memória de Contexto
+# Gerenciamento de Contexto - Configuração
 
-## ⚠️ PROBLEMA
+## Regras de Ouro
 
-A memória de contexto pode ficar muito grande e travar o sistema.
+### 1. Limite de Contexto: 80%
 
-## ✅ SOLUÇÃO
+- **Limite:** 80% do contexto máximo (aprox. 105K tokens)
+- **Atual:** 43% (57K/131K)
+- **Ação:** Se passar de 80%, limpar memória imediatamente
 
-Limpeza automática a cada 1 hora.
+### 2. Limite de Tokens: 50K
 
----
+- **Limite:** 50K tokens in/out
+- **Atual:** 48K in / 291 out
+- **Ação:** Se passar de 50K in, limpar memória
 
-## 📋 O que é removido
+### 3. Limpeza Automática
 
-### ❌ Remover (Banal/Irrelevante):
+- **Quando:** Contexto > 70% ou Tokens > 40K
+- **O que limpar:**
+  - Arquivos antigos de memória (mais de 3 dias)
+  - Logs antigos
+  - Dependências não usadas
+  - Temporary files
 
-- Detalhes de correções de bugs
-- Logs de erro específicos
-- Mensagens de erro completas
-- Stack traces
-- Detalhes de configuração repetidos
-- Informações de debug
-- Passos intermediários de correções
+### 4. Estratégias de Limpeza
 
-### ✅ Manter (Importante):
+#### Limpeza de Memória (MEMORY.md)
 
-- Progresso das Sprints
-- Decisões de arquitetura
-- Configurações críticas
-- Endpoints e URLs principais
-- Status atual do projeto
-- Próximos passos
-- Commits importantes
-- Estrutura de arquivos
+```bash
+# Listar arquivos de memória
+ls -la memory/
 
----
+# Remover arquivos antigos (mais de 3 dias)
+find memory/ -name "*.md" -mtime +3 -delete
 
-## 🔄 Verificações Automáticas
+# Manter apenas os 3 mais recentes
+ls -t memory/*.md | tail -n +4 | xargs rm
+```
 
-### A cada 1 hora:
+#### Limpeza de Logs
 
-1. **Verificar tamanho dos arquivos**
-   - Memória: máx 100KB por arquivo
-   - Logs: máx 500KB por arquivo
+```bash
+# Limpar logs antigos
+find logs/ -name "*.log" -mtime +1 -delete
 
-2. **Se arquivo grande:**
-   - Logar aviso
-   - Identificar seções para limpar
-   - Solicitar limpeza manual se necessário
+# Manter logs dos últimos 7 dias
+find logs/ -name "*.log" -mtime +7 -delete
+```
 
-3. **Rotacionar logs:**
-   - Mover logs grandes para .old
-   - Criar novos arquivos vazios
+#### Limpeza de Dependências
 
----
+```bash
+# Remover node_modules de projetos não usados
+find . -name "node_modules" -type d -prune -exec rm -rf {} \;
+```
 
-## 📊 Limites
+### 5. Monitoramento
 
-| Tipo de Arquivo | Tamanho Máximo | Ação               |
-| --------------- | -------------- | ------------------ |
-| `memory/*.md`   | 100 KB         | Aviso + Limpeza    |
-| `logs/*.log`    | 500 KB         | Rotação automática |
-| Contexto total  | 1 MB           | Limpeza agressiva  |
+#### Checar Status
 
----
+```bash
+# Ver contexto atual
+session_status
 
-## 🚨 Sinais de Alerta
+# Ver tokens
+openclaw status
 
-### Contexto está grande demais se:
+# Ver memória
+ls -lh memory/
 
-- [ ] Arquivo de memória > 100KB
-- [ ] Log principal > 500KB
-- [ ] Sistema fica lento
-- [ ] Erros de memória
-- [ ] Respostas demoram
+# Ver logs
+tail -f logs/*.log
+```
 
----
+#### Alertas
 
-## 🧹 Processo de Limpeza
+- **Contexto > 70%:** Aviso amarelo
+- **Contexto > 80%:** Aviso vermelho (ação imediata)
+- **Tokens > 40K:** Aviso amarelo
+- **Tokens > 50K:** Aviso vermelho (ação imediata)
 
-### Manual (quando necessário):
+### 6. Regras de Arquivos
 
-1. **Identificar seções banais:**
+#### Arquivos de Memória (memory/)
 
-   ```bash
-   # Ver tamanhos
-   du -sh ~/projetos-kanban/veritas-kanban/memory/*.md
-   du -sh ~/projetos-kanban/veritas-kanban/logs/*.log
-   ```
+- Manter apenas arquivos importantes
+- Remover arquivos antigos (mais de 3 dias)
+- Manter histórico de 7 dias no máximo
+- Backup semanal para segurança
 
-2. **Criar versão limpa:**
-   - Manter cabeçalho
-   - Manter status atual
-   - Remover detalhes de bugs
-   - Remover stack traces
-   - Manter próximos passos
+#### Arquivos de Log (logs/)
 
-3. **Commitar limpeza:**
-   ```bash
-   git add memory/
-   git commit -m "chore: Limpeza de contexto - remover detalhes banais"
-   git push origin develop
-   ```
+- Manter logs dos últimos 7 dias
+- Remover logs antigos
+- Compactar logs antigos (.log.gz)
 
----
+#### Arquivos de Temporário (tmp/, temp/)
 
-## ✅ Checklists de Limpeza
+- Remover após uso
+- Limpar automaticamente a cada 1 hora
+- Manter máximo de 100MB
 
-### Para arquivo de memória:
+### 7. Exemplos de Uso
 
-- [ ] Status do projeto atualizado?
-- [ ] Progresso das Sprints visível?
-- [ ] URLs e endpoints principais listados?
-- [ ] Próximos passos claros?
-- [ ] Último commit documentado?
-- [ ] Sem detalhes de bugs corrigidos?
+#### Exemplo 1: Limpeza Manual
 
-### Para logs:
+```bash
+# Limpar memória antiga
+cd /root/projetos-kanban/veritas-kanban
+find memory/ -name "*.md" -mtime +3 -delete
 
-- [ ] Menos de 500KB?
-- [ ] Erros recentes visíveis?
-- [ ] Logs antigos rotacionados?
+# Limpar logs antigos
+find logs/ -name "*.log" -mtime +1 -delete
 
----
+# Limpar node_modules
+find . -name "node_modules" -type d -prune -exec rm -rf {} \;
+```
 
-## 📝 Template Limpo
+#### Exemplo 2: Monitoramento Automático
 
-```markdown
-# [Nome do Arquivo]
+```bash
+# Script de monitoramento
+while true; do
+  context=$(session_status | jq '.context')
+  if [ $context -gt 70 ]; then
+    echo "⚠️  Contexto alto: $context%"
+    # Limpar memória
+  fi
+  sleep 300
+done
+```
 
-## Status Atual
+### 8. Checklist de Limpeza
 
-- Sprint: X
-- Branch: develop
-- Servidor: ✅ Rodando
+- [ ] Verificar contexto atual
+- [ ] Verificar tokens in/out
+- [ ] Listar arquivos de memória
+- [ ] Remover arquivos antigos (mais de 3 dias)
+- [ ] Limpar logs antigos
+- [ ] Remover node_modules não usados
+- [ ] Limpar temporary files
+- [ ] Verificar espaço em disco
+- [ ] Commitar limpeza no git
 
-## Progresso
+### 9. Backup
 
-- Sprint 0: ✅ 100%
-- Sprint 1: 🟡 X%
-- Sprint 2: ⬜ 0%
+#### Backup Semanal
 
-## URLs
+```bash
+# Backup de memória
+tar -czf memory-backup-$(date +%Y%m%d).tar.gz memory/
 
-- Frontend: http://...
-- API: http://...
+# Backup de configurações
+tar -czf config-backup-$(date +%Y%m%d).tar.gz openclaw.json
 
-## Próximos Passos
+# Backup de logs
+tar -czf logs-backup-$(date +%Y%m%d).tar.gz logs/
+```
 
-1. Tarefa X
-2. Tarefa Y
+#### Restaurar Backup
 
-## Último Commit
-
-- Hash: abc123
-- Mensagem: ...
+```bash
+# Restaurar memória
+tar -xzf memory-backup-20260217.tar.gz -C /root/projetos-kanban/veritas-kanban/
 ```
 
 ---
 
-## 🔔 Lembrete
+## Atualizações Recentes
 
-**A cada 1 hora:** Verificar contexto
-**A cada 30 min:** Verificar saúde do servidor
-**A cada 20 min:** Executar tarefas Sprint 1
+### 2026-02-17 - Configuração Inicial
+
+- Regras de contexto estabelecidas
+- Limite: 80% contexto, 50K tokens
+- Estratégias de limpeza definidas
+- Checklist criado
 
 ---
 
-**Criado:** 2026-02-17 03:40 UTC
-**Próxima verificação:** 2026-02-17 04:40 UTC
+**Última atualização:** 2026-02-17 23:50 UTC
+**Status:** ✅ Configuração pronta
+**Próxima verificação:** 2026-02-18 00:00 UTC

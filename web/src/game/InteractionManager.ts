@@ -145,7 +145,7 @@ export class InteractionManager {
     this.currentClick = {
       taskId: '',
       x: pointer.x,
-      startY: pointer.y,
+      y: pointer.y,
       startTime: this.scene.time.now,
     };
   }
@@ -155,7 +155,7 @@ export class InteractionManager {
     if (!this.currentClick || !this.config.enabled) return;
 
     const dx = pointer.x - this.currentClick!.x;
-    const dy = pointer.y - this.currentClick!.startY;
+    const dy = pointer.y - this.currentClick!.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // Se mover muito, é um drag
@@ -169,7 +169,7 @@ export class InteractionManager {
     if (!this.config.enabled || !this.currentClick) return;
 
     const dx = pointer.x - this.currentClick!.x;
-    const dy = pointer.y - this.currentClick!.startY;
+    const dy = pointer.y - this.currentClick!.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const timeElapsed = this.scene.time.now - this.currentClick!.startTime;
 
