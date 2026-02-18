@@ -9,3 +9,5 @@ export { SpritesheetManager, SpriteType as SpriteTypeEnum } from './SpritesheetM
 export { PathfindingManager } from './PathfindingManager';
 export type { Point, PathNode, Waypoint } from './PathfindingManager';
 export { GameTestPage } from './GameTestPage';
+export { GatherGame, type GatherTask, type GatherAgent } from './GatherGame';
+export { GatherTestPage } from './GatherTestPage';
