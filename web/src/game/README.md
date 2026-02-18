@@ -1,33 +1,42 @@
-/\*\*
-
-- Documentação da API do Jogo Gamificado
-  \*/
-
-# Gamificação do Veritas Kanban
+# 🎮 Veritas Kanban - Sistema de Gamificação
 
 Sistema de gamificação pixel art para o Veritas Kanban.
 
 ## 📋 Índice
 
 - [Visão Geral](#visão-geral)
+- [Sprints](#sprints)
 - [Componentes](#componentes)
 - [Tipos](#tipos)
-- [Configuração](#configuração)
 - [Uso](#uso)
+- [Atalhos de Teclado](#atalhos-de-teclado)
 
 ---
 
 ## Visão Geral
 
-O jogo gamificado transforma tarefas do Kanban em personagens pixel art em um escritório virtual. Cada tarefa é representada por um personagem que pode interagir, mover e mudar de status visualmente.
+O jogo gamificado transforma tarefas do Kanban em personagens pixel art em um escritório virtual.
 
-### Características
+### ✅ Funcionalidades
 
-- ✅ **Canvas Responsivo** - Ajusta automaticamente ao tamanho da tela
-- ✅ **Pixel Art** - Sprites profissionais gerados programaticamente
-- ✅ **Animações** - Movimento fluido entre salas
-- ✅ **Interação** - Clique, drag & drop, zoom
-- ✅ **Status Real-time** - Tarefas mudam de sala automaticamente
+- **Canvas Responsivo** - Ajusta automaticamente ao tamanho da tela
+- **Pixel Art Procedural** - Sprites gerados dinamicamente
+- **Pathfinding A\*** - Movimento inteligente entre salas
+- **Interação Completa** - Drag & Drop, zoom, atalhos
+- **Real-time** - Tarefas mudam de sala automaticamente
+
+---
+
+## Sprints
+
+| Sprint | Nome         | Status  | Descrição                  |
+| ------ | ------------ | ------- | -------------------------- |
+| 0      | Setup        | ✅ 100% | Estrutura base do projeto  |
+| 1      | MVP Visual   | ✅ 100% | Canvas, salas, personagens |
+| 2      | Animações    | ✅ 100% | Pathfinding A\*, waypoints |
+| 3      | Interação    | ✅ 100% | Drag & Drop, zoom, atalhos |
+| 4      | Pixel Art    | ✅ 100% | Spritesheets profissionais |
+| 5      | Documentação | ✅ 100% | README, API docs           |
 
 ---
 
@@ -35,41 +44,39 @@ O jogo gamificado transforma tarefas do Kanban em personagens pixel art em um es
 
 ### KanbanGame
 
-Componente principal que renderiza o jogo gamificado.
-
-**Props:**
-
-| Prop          | Tipo                                          | Obrigatório | Descrição                        |
-| ------------- | --------------------------------------------- | ----------- | -------------------------------- |
-| `tasks`       | `TaskData[]`                                  | Sim         | Lista de tarefas para renderizar |
-| `onTaskClick` | `(taskId: string) => void`                    | Não         | Callback ao clicar em uma tarefa |
-| `onTaskMove`  | `(taskId: string, newStatus: string) => void` | Não         | Callback ao mover uma tarefa     |
-
-**Exemplo de uso:**
+Componente principal que renderiza o jogo.
 
 ```tsx
 import { KanbanGame } from '@/game';
 
-function MeuComponente() {
-  const [tasks, setTasks] = useState([
-    { id: '1', title: 'Tarefa 1', status: 'todo', priority: 'high' },
-  ]);
-
-  return (
-    <KanbanGame
-      tasks={tasks}
-      onTaskClick={(id) => console.log('Clicou:', id)}
-      onTaskMove={(id, status) => {
-        setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
-      }}
-    />
-  );
-}
+<KanbanGame
+  tasks={tasks}
+  onTaskClick={(id) => console.log('Clicou:', id)}
+  onTaskMove={(id, status) => console.log('Moveu:', id, status)}
+/>;
 ```
 
-### GameTestPage
+### SpritesheetManager
 
-Página de teste com dados mock e controles interativos.
+Gerencia sprites pixel art procedurais.
+
+```tsx
+import { SpritesheetManager, SpriteType } from '@/game';
+
+const manager = new SpritesheetManager(scene);
+const sprite = manager.getSprite(SpriteType.CODE);
+```
+
+### PathfindingManager
+
+Sistema de navegação A\* entre salas.
+
+```tsx
+import { PathfindingManager } from '@/game';
+
+const pathfinder = new PathfindingManager();
+const path = pathfinder.findPathBetweenRooms('todo', 'done');
+```
 
 ---
 
@@ -87,147 +94,87 @@ interface TaskData {
 }
 ```
 
-| Campo      | Tipo                                             | Descrição                 |
-| ---------- | ------------------------------------------------ | ------------------------- |
-| `id`       | `string`                                         | ID único da tarefa        |
-| `title`    | `string`                                         | Nome da tarefa            |
-| `status`   | `'todo' \| 'in-progress' \| 'blocked' \| 'done'` | Status atual              |
-| `priority` | `'low' \| 'medium' \| 'high'`                    | Prioridade (opcional)     |
-| `type`     | `string`                                         | Tipo de tarefa (opcional) |
-
-### Status
-
-| Valor         | Sala                | Descrição             |
-| ------------- | ------------------- | --------------------- |
-| `todo`        | 🪑 Sala de Espera   | Tarefas pendentes     |
-| `in-progress` | 💻 Área de Trabalho | Tarefas em andamento  |
-| `blocked`     | 🚧 Zona Bloqueada   | Tarefas com bloqueios |
-| `done`        | 🎉 Área de Sucesso  | Tarefas concluídas    |
-
----
-
-## Configuração
-
-### Phaser Config
+### SpriteType
 
 ```typescript
-const GAME_CONFIG = {
-  type: Phaser.AUTO,
-  width: '100%',
-  height: '100%',
-  backgroundColor: '#1a1a2e',
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-  },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      gravity: { x: 0, y: 0 },
-      debug: false,
-    },
-  },
-};
+enum SpriteType {
+  TODO = 'todo',
+  IN_PROGRESS = 'in-progress',
+  BLOCKED = 'blocked',
+  DONE = 'done',
+  CODE = 'code',
+  BUG = 'bug',
+  FEATURE = 'feature',
+  RESEARCH = 'research',
+  DOCS = 'docs',
+  DESIGN = 'design',
+  DEFAULT = 'default',
+}
 ```
-
-### Sprites
-
-Sprites são gerados programaticamente (sem assets externos). Tipos disponíveis:
-
-- `character-idle` - Personagem parado
-- `character-walk` - Personagem andando
-- `character-work` - Personagem trabalhando
-- `character-celebrate` - Personagem comemorando
-- `character-blocked` - Personagem bloqueado
-- `furniture-desk` - Mesa
-- `furniture-chair` - Cadeira
-- `furniture-computer` - Computador
-- `decoration-plant` - Planta
-- `decoration-coffee` - Café
-- `obstacle-cone` - Cone
-- `obstacle-barrier` - Barreira
 
 ---
 
 ## Uso
 
-### Inicialização
+### Página de Teste
 
-```typescript
-import { KanbanGame } from '@/game';
+Acesse: `http://localhost:3000/game`
 
-function App() {
-  const [tasks, setTasks] = useState<TaskData[]>([]);
-  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+### Integração com Tarefas Reais
 
-  useEffect(() => {
-    // Carregar tarefas da API
-    fetch('/api/tasks')
-      .then(res => res.json())
-      .then(data => setTasks(data));
-  }, []);
+```tsx
+// Toggle entre dados reais e mock
+const [useRealTasks, setUseRealTasks] = useState(true);
 
-  return (
-    <KanbanGame
-      tasks={tasks}
-      onTaskClick={(id) => setSelectedTask(id)}
-    />
-  );
-}
+const { data: tasks } = useQuery({
+  queryKey: ['tasks'],
+  queryFn: () => fetch('/api/tasks').then((r) => r.json()),
+  enabled: useRealTasks,
+});
 ```
 
-### Atualizar Tarefas
+---
 
-```typescript
-// Mudar status de uma tarefa
-const moveTask = (taskId: string, newStatus: string) => {
-  setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)));
-};
-```
+## Atalhos de Teclado
 
-### Interações
+| Tecla       | Função            |
+| ----------- | ----------------- |
+| **D**       | Toggle modo debug |
+| **R**       | Resetar zoom      |
+| **+/-**     | Zoom in/out       |
+| **1/2/3/4** | Navegar salas     |
+| **H**       | Mostrar ajuda     |
+| **ESC**     | Cancelar drag     |
 
-- **Clique** - Abre detalhes da tarefa
-- **Drag** - Move o personagem para outra sala
-- **Drop** - Muda o status da tarefa automaticamente
-- **Zoom** - Usa scroll ou botões para zoom in/out
+### Mouse/Touch
+
+| Ação       | Função                   |
+| ---------- | ------------------------ |
+| **Scroll** | Zoom in/out              |
+| **Clique** | Ver detalhes da tarefa   |
+| **Drag**   | Mover tarefa entre salas |
+| **Pinch**  | Zoom (mobile)            |
 
 ---
 
 ## Performance
 
-### Otimizações
-
-- ✅ Sprites gerados programaticamente (sem assets externos)
-- ✅ Canvas responsivo com resize handler
-- ✅ Animações otimizadas (tweens)
-- ✅ Garbage collection otimizado
-
-### FPS
-
-- 60 FPS em telas médias
-- 30-45 FPS em telas grandes
-- Depende do tamanho do container
+- **60 FPS** em telas médias
+- **Sprites procedurais** - sem assets externos
+- **Canvas responsivo** com resize handler
+- **Tweens otimizados** para animações
 
 ---
 
-## Limitações
+## Arquivos
 
-- ✅ ~~Não suporta touch em dispositivos móveis~~ **CORRIGIDO!**
-- ❌ Não funciona offline (requer internet para Phaser)
-- ❌ Sprites são pixel art simples (sem assets externos)
-- ❌ Movimento é animado (não instantâneo)
-
----
-
-## Futuro
-
-### Planejado
-
-- [x] ✅ Suporte a touch (implementado!)
-- [ ] Áudio e efeitos sonoros
-- [ ] Exportar para PNG/SVG
-- [ ] Integração com outras APIs
+| Arquivo                 | Descrição            |
+| ----------------------- | -------------------- |
+| `KanbanGame.tsx`        | Componente principal |
+| `SpritesheetManager.ts` | Pixel art procedural |
+| `PathfindingManager.ts` | Navegação A\*        |
+| `AnimationManager.ts`   | Animações e efeitos  |
+| `InteractionManager.ts` | Interação e atalhos  |
 
 ---
 
@@ -237,6 +184,6 @@ MIT
 
 ---
 
-**Versão:** 1.0.0
-**Última atualização:** 2026-02-17
+**Versão:** 2.0.0  
+**Última atualização:** 2026-02-18  
 **Status:** ✅ Produção Ready

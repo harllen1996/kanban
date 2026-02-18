@@ -5,4 +5,7 @@ export { AnimationManager, detectStatusChanges } from './AnimationManager';
 export type { Position } from './AnimationManager';
 export type { StatusChange } from './AnimationManager';
 export { SpriteManager, type SpriteType } from './SpriteManager';
+export { SpritesheetManager, SpriteType as SpriteTypeEnum } from './SpritesheetManager';
+export { PathfindingManager } from './PathfindingManager';
+export type { Point, PathNode, Waypoint } from './PathfindingManager';
 export { GameTestPage } from './GameTestPage';
