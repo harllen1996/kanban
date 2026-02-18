@@ -9,7 +9,7 @@
  * - Manter agentes online 24h
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -52,8 +52,6 @@ import {
   Clock,
   Cpu,
   Terminal,
-  AlertCircle,
-  CheckCircle2,
   Loader2,
   Sparkles,
 } from 'lucide-react';
@@ -92,7 +90,6 @@ function AgentCard({
   onToggle: (id: string, status: string) => void;
 }) {
   const isOnline = agent.status === 'online' || agent.status === 'busy';
-  const isBusy = agent.status === 'busy';
 
   const statusColors = {
     online: 'bg-green-500',

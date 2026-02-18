@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
+import { useAddObservation, useDeleteObservation } from '@/hooks/useTasks';
 import { useFeatureSettings } from '@/hooks/useFeatureSettings';
 import { useDebouncedSave } from '@/hooks/useDebouncedSave';
 import { TaskDetailsTab } from './detail/TaskDetailsTab';
@@ -37,7 +38,6 @@ import {
   Eye,
 } from 'lucide-react';
 import type { Task, ReviewComment, ReviewState } from '@veritas-kanban/shared';
-import { useAddObservation, useDeleteObservation } from '@/hooks/useTasks';
 
 interface TaskDetailPanelProps {
   task: Task | null;
@@ -64,6 +64,8 @@ export function TaskDetailPanel({
   const [applyTemplateOpen, setApplyTemplateOpen] = useState(false);
   const [taskChatOpen, setTaskChatOpen] = useState(false);
   const [workflowOpen, setWorkflowOpen] = useState(false);
+  const addObservation = useAddObservation();
+  const deleteObservation = useDeleteObservation();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
