@@ -3,6 +3,8 @@
  * Sprint 2: Movimento fluido entre salas
  */
 
+import PathfindingManager from './PathfindingManager';
+
 // Tipos para o sistema de movimento
 export interface Position {
   x: number;
@@ -20,10 +22,12 @@ export interface StatusChange {
 export class AnimationManager {
   private scene: Phaser.Scene;
   private rooms: Map<string, { x: number; y: number; width: number; height: number }>;
+  private pathfindingManager: PathfindingManager;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.rooms = new Map();
+    this.pathfindingManager = new PathfindingManager();
   }
 
   // Registrar salas para pathfinding
@@ -31,85 +35,128 @@ export class AnimationManager {
     this.rooms.set(name, dimensions);
   }
 
-  // Calcular caminho entre duas salas (simplificado)
-  calculatePath(from: string, to: string): Position[] {
-    const startRoom = this.rooms.get(from);
-    const endRoom = this.rooms.get(to);
-
-    if (!startRoom || !endRoom) return [];
-
-    const start: Position = {
-      x: startRoom.x + startRoom.width / 2,
-      y: startRoom.y + startRoom.height / 2,
+  // Atualizar waypoints baseado nas salas
+  updatePathfinding() {
+    const rooms = {
+      todo: this.rooms.get('todo') || { x: 0, y: 0, width: 200, height: 400 },
+      inProgress: this.rooms.get('in-progress') || { x: 200, y: 0, width: 200, height: 400 },
+      blocked: this.rooms.get('blocked') || { x: 400, y: 0, width: 200, height: 400 },
+      done: this.rooms.get('done') || { x: 600, y: 0, width: 200, height: 400 },
     };
 
-    const end: Position = {
-      x: endRoom.x + endRoom.width / 2,
-      y: endRoom.y + endRoom.height / 2,
-    };
-
-    // Caminho simples (direto)
-    // Para caminho mais complexo, usar A*
-    return [start, end];
+    this.pathfindingManager.updateWaypointsForRooms(rooms);
   }
 
-  // Animar movimento entre posições
+  // Calcular caminho entre duas salas usando A*
+  calculatePath(from: string, to: string): Position[] {
+    // Normalizar nomes das salas
+    const fromRoom = from === 'in-progress' ? 'in-progress' : from;
+    const toRoom = to === 'in-progress' ? 'in-progress' : to;
+
+    // Usar A* para encontrar caminho
+    const path = this.pathfindingManager.findPathBetweenRooms(fromRoom, toRoom);
+
+    return path.map((p) => ({ x: p.x, y: p.y }));
+  }
+
+  // Animar movimento entre posições com caminho suave
   animateMovement(
     gameObject: Phaser.GameObjects.Container,
     path: Position[],
     duration: number = 2000,
     onComplete?: () => void
   ) {
-    if (path.length < 2) return;
+    if (path.length < 2) {
+      onComplete?.();
+      return;
+    }
 
+    // Criar tween sequencial com curva bezier
     const tweens: Phaser.Types.Tweens.TweenBuilderConfig[] = [];
 
     for (let i = 1; i < path.length; i++) {
+      const from = path[i - 1];
+      const to = path[i];
+      const distance = Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
+      const segmentDuration = (distance / 800) * duration; // 800px/s
+
       tweens.push({
         targets: gameObject,
-        x: path[i].x,
-        y: path[i].y,
-        duration: duration / (path.length - 1),
+        x: to.x,
+        y: to.y,
+        duration: Math.max(300, segmentDuration),
         ease: 'Sine.easeInOut',
       });
     }
 
-    // Criar tween sequencial
-    if (tweens.length > 0) {
-      this.scene.tweens.add({
-        ...tweens[0],
-        onComplete: () => {
-          if (tweens.length > 1) {
-            this.scene.tweens.add({
-              ...tweens[1],
-              onComplete: onComplete,
-            });
-          } else {
-            onComplete?.();
-          }
-        },
-      });
+    // Executar tweens em sequência
+    this.executeTweenSequence(gameObject, tweens, 0, onComplete);
+  }
+
+  // Executar tweens em sequência
+  private executeTweenSequence(
+    gameObject: Phaser.GameObjects.Container,
+    tweens: Phaser.Types.Tweens.TweenBuilderConfig[],
+    index: number,
+    onComplete?: () => void
+  ) {
+    if (index >= tweens.length) {
+      gameObject.setAlpha(1);
+      onComplete?.();
+      return;
     }
 
-    // Adicionar efeito de movimento
-    this.addMovementEffect(gameObject);
+    // Adicionar efeito visual durante movimento
+    if (index === 0) {
+      this.addMovementEffect(gameObject);
+    }
+
+    this.scene.tweens.add({
+      ...tweens[index],
+      onComplete: () => {
+        this.executeTweenSequence(gameObject, tweens, index + 1, onComplete);
+      },
+    });
   }
 
   // Efeito visual durante movimento
   private addMovementEffect(gameObject: Phaser.GameObjects.Container) {
-    // Flicker suave
+    // Levantar levemente (simular "flutuando")
     this.scene.tweens.add({
       targets: gameObject,
-      alpha: 0.8,
-      duration: 100,
+      scaleX: 1.1,
+      scaleY: 0.9,
+      duration: 150,
       yoyo: true,
       repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Trail effect (sombra)
+    const trail = this.scene.add.container(gameObject.x, gameObject.y);
+    const trailCircle = this.scene.add.circle(0, 0, 15, 0x4d96ff, 0.3);
+    trail.add(trailCircle);
+    trail.setDepth(gameObject.depth - 1);
+
+    // Animar trail
+    this.scene.tweens.add({
+      targets: trail,
+      alpha: 0,
+      scale: 0.5,
+      duration: 300,
+      repeat: -1,
+      onRepeat: () => {
+        trail.setPosition(gameObject.x, gameObject.y);
+        trail.setAlpha(0.3);
+        trail.setScale(1);
+      },
     });
 
     // Parar efeito após movimento
     this.scene.time.delayedCall(2500, () => {
       this.scene.tweens.killTweensOf(gameObject);
-      gameObject.setAlpha(1);
+      gameObject.setScale(1, 1);
+      trail.destroy();
     });
   }
 

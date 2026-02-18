@@ -76,6 +76,9 @@ class KanbanGameScene extends Phaser.Scene {
       this.animationManager.registerRoom('in-progress', this.rooms.inProgress);
       this.animationManager.registerRoom('blocked', this.rooms.blocked);
       this.animationManager.registerRoom('done', this.rooms.done);
+
+      // Atualizar waypoints do pathfinding
+      this.animationManager.updatePathfinding();
     }
 
     // Configurar handlers de interação
