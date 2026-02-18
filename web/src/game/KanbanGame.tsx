@@ -44,6 +44,9 @@ class KanbanGameScene extends Phaser.Scene {
   private animationManager!: AnimationManager;
   private interactionManager!: InteractionManager;
   private previousTasks: Map<string, { status: string }> = new Map();
+  private debugMode: boolean = false;
+  private debugGraphics!: Phaser.GameObjects.Graphics;
+  private pathGraphics!: Phaser.GameObjects.Graphics;
 
   constructor() {
     super({ key: 'KanbanGameScene' });
@@ -56,6 +59,8 @@ class KanbanGameScene extends Phaser.Scene {
 
   create() {
     this.graphics = this.add.graphics();
+    this.debugGraphics = this.add.graphics();
+    this.pathGraphics = this.add.graphics();
 
     // Inicializar gerenciadores
     this.animationManager = new AnimationManager(this);
@@ -113,8 +118,48 @@ class KanbanGameScene extends Phaser.Scene {
       this.previousTasks.set(task.id, { status: task.status });
     });
 
+    // Toggle de debug com tecla 'D'
+    this.input.keyboard!.on('keydown-D', () => {
+      this.debugMode = !this.debugMode;
+      this.drawDebug();
+    });
+
     // Resize handler
     this.scale.on('resize', this.handleResize, this);
+  }
+
+  private drawDebug() {
+    this.debugGraphics.clear();
+
+    if (!this.debugMode || !this.rooms) return;
+
+    const pathfinding = this.animationManager['pathfindingManager'] as any;
+    if (!pathfinding) return;
+
+    // Desenhar waypoints
+    const waypoints = pathfinding.getAllWaypoints();
+    waypoints.forEach((wp: any) => {
+      this.debugGraphics.fillStyle(0x4d96ff, 0.5);
+      this.debugGraphics.fillCircle(wp.x, wp.y, 5);
+    });
+
+    // Desenhar conexões
+    this.debugGraphics.lineStyle(1, 0x4d96ff, 0.3);
+    waypoints.forEach((wp: any) => {
+      wp.connections.forEach((connId: string) => {
+        const conn = pathfinding['waypoints'].get(connId);
+        if (conn) {
+          this.debugGraphics.beginPath();
+          this.debugGraphics.moveTo(wp.x, wp.y);
+          this.debugGraphics.lineTo(conn.x, conn.y);
+          this.debugGraphics.strokePath();
+        }
+      });
+    });
+  }
+
+  private drawPath(path: any[]) {
+    this.animationManager.drawPath(this.pathGraphics, path);
   }
 
   private setupInteractionHandlers() {
@@ -343,6 +388,12 @@ class KanbanGameScene extends Phaser.Scene {
       container.add([emoji, name, priority]);
       container.setSize(40, 50);
       container.setInteractive({ useHandCursor: true });
+
+      // Se modo debug, desenhar caminho para o centro da sala
+      if (this.debugMode && this.rooms) {
+        const path = this.animationManager.calculatePath(task.status, task.status);
+        this.drawPath(path);
+      }
 
       // Animação idle
       this.tweens.add({

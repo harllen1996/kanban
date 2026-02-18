@@ -160,29 +160,6 @@ export class AnimationManager {
     });
   }
 
-  // Animação idle mais elaborada
-  addIdleAnimation(
-    gameObject: Phaser.GameObjects.Container,
-    type: 'normal' | 'working' | 'blocked' | 'celebrating' = 'normal'
-  ) {
-    const animations = {
-      normal: { y: -3, duration: 1200 },
-      working: { scaleX: 1.05, scaleY: 0.95, duration: 800 },
-      blocked: { angle: 5, duration: 500 },
-      celebrating: { scaleX: 1.2, scaleY: 1.2, duration: 300 },
-    };
-
-    const anim = animations[type];
-
-    this.scene.tweens.add({
-      targets: gameObject,
-      ...anim,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    });
-  }
-
   // Efeito de entrada (spawn)
   addSpawnEffect(gameObject: Phaser.GameObjects.Container) {
     gameObject.setScale(0);
@@ -271,6 +248,36 @@ export class AnimationManager {
       yoyo: true,
       repeat: 3,
       onComplete: () => alert.destroy(),
+    });
+  }
+
+  // Retorna centros das salas
+  getRoomCenters(): Map<string, Position> {
+    return this.pathfindingManager.getRoomCenters();
+  }
+
+  // Desenhar caminho no graphics
+  drawPath(graphics: Phaser.GameObjects.Graphics, path: Position[]) {
+    if (path.length < 2) return;
+
+    graphics.clear();
+
+    // Desenhar linha do caminho
+    graphics.lineStyle(3, 0xffd93d, 0.8);
+    graphics.beginPath();
+    graphics.moveTo(path[0].x, path[0].y);
+
+    for (let i = 1; i < path.length; i++) {
+      graphics.lineTo(path[i].x, path[i].y);
+    }
+
+    graphics.strokePath();
+
+    // Desenhar pontos
+    path.forEach((point, index) => {
+      const alpha = index === 0 || index === path.length - 1 ? 1 : 0.6;
+      graphics.fillStyle(0xffd93d, alpha);
+      graphics.fillCircle(point.x, point.y, 6);
     });
   }
 }
