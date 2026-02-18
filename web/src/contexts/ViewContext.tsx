@@ -7,7 +7,8 @@ export type AppView =
   | 'archive'
   | 'templates'
   | 'workflows'
-  | 'game-test';
+  | 'game-test'
+  | 'gather';
 
 interface ViewContextValue {
   view: AppView;
